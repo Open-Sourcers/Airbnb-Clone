@@ -4,10 +4,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Airbnb.Domain.Identity;
 
 namespace Airbnb.Domain.Entities
 {
-	public class Booking:BaseEntity<int>
+	public class Booking : BaseEntity<int>
 	{
 		public decimal TotalPrice { get; set; }
 		public DateTimeOffset StartDate { get; set; }
@@ -19,6 +20,8 @@ namespace Airbnb.Domain.Entities
 		[ForeignKey("Property")]
 		public int PropertyId { get; set; }
 
-		// In Complete Relation with User
-	}
+        public virtual AppUser User { get; set; }
+        [ForeignKey("User")]
+        public string UserId { get; set; }
+    }
 }

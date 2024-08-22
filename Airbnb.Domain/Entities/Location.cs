@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Airbnb.Domain.Entities
 {
-	public class Location:BaseEntity<int>
+	public class Location : BaseEntity<int>
 	{
 		public string Name { get; set; } = string.Empty;
 
