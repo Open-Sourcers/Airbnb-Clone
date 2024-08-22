@@ -1,3 +1,5 @@
+using Airbnb.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Airbnb.APIs
 {
@@ -13,6 +15,11 @@ namespace Airbnb.APIs
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddDbContext<AirbnbDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+                options.UseLazyLoadingProxies();
+            });
 
             var app = builder.Build();
 
@@ -26,7 +33,6 @@ namespace Airbnb.APIs
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 

@@ -4,10 +4,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Airbnb.Domain.Identity;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 namespace Airbnb.Domain.Entities
 {
-	public class Review:BaseEntity<int>
+	public class Review : BaseEntity<int>
 	{
 		public string Comment { get; set; } = string.Empty;
 		public int Stars { get; set; }
@@ -16,6 +18,8 @@ namespace Airbnb.Domain.Entities
 		[ForeignKey("Property")]
 		public int PropertyId { get; set; }
 
-		// in complete user Relation
-	}
+        public virtual AppUser User { get; set; }
+        [ForeignKey("User")]
+        public string UserId { get; set; }
+    }
 }
