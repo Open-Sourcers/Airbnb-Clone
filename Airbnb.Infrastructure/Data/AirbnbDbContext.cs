@@ -29,14 +29,12 @@ namespace Airbnb.Infrastructure.Data
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Country> Countries { get; set; }
-        public DbSet<PropertyImage> Images { get; set; }
+        public DbSet<Image> Images { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<Property> Properties { get; set; }
         public DbSet<PropertyCategory> PropertyCategories { get; set; }
         public DbSet<Region> Regions { get; set; }
         public DbSet<Review> Reviews { get; set; }
-        public DbSet<Owner> owners { get; set; }
-        public DbSet <OwnerProfileImage> OwnerProfiles { get; set; }
         public DbSet <RoomService> roomServices { get; set; }
     }
 }

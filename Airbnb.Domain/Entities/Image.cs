@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Airbnb.Domain.Entities
 {
-	public class PropertyImage : BaseEntity<int>
+	public class Image : BaseEntity<int>
 	{
 		public string Url { get; set; } = string.Empty;
 
