@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Airbnb.Domain.Identity;
 
 namespace Airbnb.Domain.Entities
 {
@@ -18,13 +19,16 @@ namespace Airbnb.Domain.Entities
 		public virtual Location Location { get; set; }
 		[ForeignKey("Location")]
 		public int LocationId { get; set; }
-
+		public virtual AppUser AppUser { get; set; }
 		public virtual ICollection<Image> Images { get; set; } = new HashSet<Image>();
 
 		public virtual ICollection<PropertyCategory> Categories { get; set; } = new HashSet<PropertyCategory>();
 
 		public virtual ICollection<Review> Reviews { get; set; }=new HashSet<Review>();
 
-		public virtual ICollection<Booking> Bookings { get; set; } = new HashSet<Booking>();
+
+        public virtual ICollection<RoomService> RoomServices { get; set; } = new List<RoomService>();
+
+        public virtual ICollection<Booking> Bookings { get; set; } = new HashSet<Booking>();
 	}
 }

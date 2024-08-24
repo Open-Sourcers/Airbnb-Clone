@@ -7,6 +7,7 @@ using Airbnb.Domain.Entities;
 using Airbnb.Domain.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Airbnb.Infrastructure.Data
 {
@@ -16,7 +17,7 @@ namespace Airbnb.Infrastructure.Data
         {
              
         }
-
+       
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<PropertyCategory>(E => {
@@ -34,5 +35,6 @@ namespace Airbnb.Infrastructure.Data
         public DbSet<PropertyCategory> PropertyCategories { get; set; }
         public DbSet<Region> Regions { get; set; }
         public DbSet<Review> Reviews { get; set; }
+        public DbSet <RoomService> roomServices { get; set; }
     }
 }
