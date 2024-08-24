@@ -18,13 +18,20 @@ namespace Airbnb.Domain.Entities
 		public virtual Location Location { get; set; }
 		[ForeignKey("Location")]
 		public int LocationId { get; set; }
+        [ForeignKey("Owner")]
 
-		public virtual ICollection<Image> Images { get; set; } = new HashSet<Image>();
+        public int OwnerId { get; set; }
+		public virtual Owner Owner { get; set; }
+
+		public virtual ICollection<PropertyImage> Images { get; set; } = new HashSet<PropertyImage>();
 
 		public virtual ICollection<PropertyCategory> Categories { get; set; } = new HashSet<PropertyCategory>();
 
 		public virtual ICollection<Review> Reviews { get; set; }=new HashSet<Review>();
 
-		public virtual ICollection<Booking> Bookings { get; set; } = new HashSet<Booking>();
+
+        public virtual ICollection<RoomService> RoomServices { get; set; } = new List<RoomService>();
+
+        public virtual ICollection<Booking> Bookings { get; set; } = new HashSet<Booking>();
 	}
 }
