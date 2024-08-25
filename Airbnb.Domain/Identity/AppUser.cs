@@ -19,11 +19,8 @@ namespace Airbnb.Domain.Identity
         [RegularExpression(@"^\d+-[A-Za-z]+-[A-Za-z]+-[A-Za-z]+$", ErrorMessage = "The address must follow the pattern '123-street-city-country'.")]
         public string Address { get; set; } = string.Empty;
         public virtual ICollection<Booking> Bookings { get; set; } = new HashSet<Booking>();
-        public virtual ICollection <Property> Properties { get; set; }
+        public virtual ICollection <Property> Properties { get; set; } = new HashSet<Property>();
         public virtual ICollection<Review> Reviews { get; set; } = new HashSet<Review>();
-        [ForeignKey("Image")]
-
-        public int? ImageId { get; set; }
-        public virtual Image ProfileImage { get; set; }
+        public string ProfileImage { get; set; }
     }
 }
