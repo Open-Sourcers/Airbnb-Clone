@@ -1,3 +1,4 @@
+using Airbnb.APIs.Utility;
 using Airbnb.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -5,7 +6,7 @@ namespace Airbnb.APIs
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,8 @@ namespace Airbnb.APIs
             });
 
             var app = builder.Build();
+
+            await (ExtensionMethods.ApplyMigrations(app));
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
