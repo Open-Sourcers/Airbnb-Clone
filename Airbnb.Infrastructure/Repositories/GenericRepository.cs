@@ -1,6 +1,8 @@
 ﻿using Airbnb.Domain;
+using Airbnb.Domain.Interfaces.Interface;
 using Airbnb.Domain.Interfaces.Repositories;
 using Airbnb.Infrastructure.Data;
+using Airbnb.Infrastructure.Specifications;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using System;
@@ -45,5 +47,20 @@ namespace Airbnb.Infrastructure.Repositories
 
         public void UpdateRange(IEnumerable<TEntity> entities)
          => _dbSet.UpdateRange(entities);
+
+        public async Task<IReadOnlyList<TEntity>>? GetAllWithSpecAsync(ISpecifications<TEntity, TKey> spec)
+        {
+            return await ApplySpecification(spec).ToListAsync();
+        }
+
+        public async Task<TEntity>? GetEntityWithSpecAsync(ISpecifications<TEntity, TKey> spec)
+        {
+            return await ApplySpecification(spec).FirstOrDefaultAsync();
+        }
+
+        private IQueryable<TEntity> ApplySpecification(ISpecifications<TEntity, TKey> Spec)
+        {
+            return SpecificationEvaluator<TEntity, TKey>.GetQuery(_context.Set<TEntity>(), Spec);
+        }
     }
 }
