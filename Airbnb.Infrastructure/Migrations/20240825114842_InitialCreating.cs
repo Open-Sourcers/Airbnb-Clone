@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Airbnb.Infrastructure.Data.Migrations
+namespace Airbnb.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialCreating : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -32,6 +32,7 @@ namespace Airbnb.Infrastructure.Data.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProfileImage = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -235,11 +236,17 @@ namespace Airbnb.Infrastructure.Data.Migrations
                     NightPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Rate = table.Column<float>(type: "real", nullable: false),
                     PlaceType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LocationId = table.Column<int>(type: "int", nullable: false)
+                    LocationId = table.Column<int>(type: "int", nullable: false),
+                    OwnerId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Properties", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Properties_AspNetUsers_OwnerId",
+                        column: x => x.OwnerId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Properties_Locations_LocationId",
                         column: x => x.LocationId,
@@ -351,6 +358,26 @@ namespace Airbnb.Infrastructure.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "roomServices",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Decscription = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PropertyId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_roomServices", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_roomServices_Properties_PropertyId",
+                        column: x => x.PropertyId,
+                        principalTable: "Properties",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -421,6 +448,11 @@ namespace Airbnb.Infrastructure.Data.Migrations
                 column: "LocationId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Properties_OwnerId",
+                table: "Properties",
+                column: "OwnerId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PropertyCategories_PropertyId",
                 table: "PropertyCategories",
                 column: "PropertyId");
@@ -434,6 +466,11 @@ namespace Airbnb.Infrastructure.Data.Migrations
                 name: "IX_Reviews_UserId",
                 table: "Reviews",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_roomServices_PropertyId",
+                table: "roomServices",
+                column: "PropertyId");
         }
 
         /// <inheritdoc />
@@ -467,16 +504,19 @@ namespace Airbnb.Infrastructure.Data.Migrations
                 name: "Reviews");
 
             migrationBuilder.DropTable(
+                name: "roomServices");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "Categories");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Properties");
 
             migrationBuilder.DropTable(
-                name: "Properties");
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Locations");

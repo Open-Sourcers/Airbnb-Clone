@@ -19,7 +19,7 @@ namespace Airbnb.Domain.Entities
 		public virtual Location Location { get; set; }
 		[ForeignKey("Location")]
 		public int LocationId { get; set; }
-		public virtual AppUser AppUser { get; set; }
+		public virtual AppUser Owner { get; set; }
 		public virtual ICollection<Image> Images { get; set; } = new HashSet<Image>();
 
 		public virtual ICollection<PropertyCategory> Categories { get; set; } = new HashSet<PropertyCategory>();
