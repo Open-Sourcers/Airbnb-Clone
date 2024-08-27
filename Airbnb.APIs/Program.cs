@@ -1,5 +1,7 @@
 using Airbnb.APIs.Utility;
+using Airbnb.Domain.Interfaces.Repositories;
 using Airbnb.Infrastructure.Data;
+using Airbnb.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Airbnb.APIs
@@ -13,6 +15,7 @@ namespace Airbnb.APIs
             // Add services to the container.
 
             builder.Services.AddControllers();
+            builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

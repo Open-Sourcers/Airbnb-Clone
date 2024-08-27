@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Airbnb.Domain.Entities
 {
-	public class PropertyCategory
+	public class PropertyCategory : BaseEntity<int>
 	{
 		public virtual Category Category { get; set; }
 		[ForeignKey("Category")]
