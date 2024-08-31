@@ -19,8 +19,4 @@
     <ProjectReference Include="..\Airbnb.Infrastructure\Airbnb.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Extensions\" />
-  </ItemGroup>
-
 </Project>
