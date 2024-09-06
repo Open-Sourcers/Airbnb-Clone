@@ -34,6 +34,10 @@ namespace Airbnb.APIs.Validators
                 .NotEmpty().WithMessage("Password is required.")
                 .Matches(@"^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$")
                 .WithMessage("Password must be 8-20 characters long, with at least one uppercase letter, one digit, and one special character.");
+
+            RuleFor(x => x.role)
+                        .Must(role => role == Role.Customer|| role == Role.Owner)
+                        .WithMessage("Invalid role. Allowed roles are 'Customer' and 'Owner'.");
         }
     }
 }

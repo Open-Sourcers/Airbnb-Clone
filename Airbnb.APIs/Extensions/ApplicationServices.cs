@@ -17,10 +17,9 @@ namespace Airbnb.APIs.Extensions
         {
             Services.AddDbContext<AirbnbDbContext>(options =>
             {
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+                options.UseSqlServer(Configuration.GetConnectionString("RemoteConnection"));
                 options.UseLazyLoadingProxies();
             });
-            // Identity Configurations
             // Identity Configurations
             Services.AddIdentity<AppUser, IdentityRole>()
                     .AddEntityFrameworkStores<AirbnbDbContext>()

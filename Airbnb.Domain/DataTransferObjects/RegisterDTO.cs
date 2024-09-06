@@ -3,10 +3,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Airbnb.Domain.DataTransferObjects
 {
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public enum Role
+    {
+        Customer,
+        Owner
+    }
     public class RegisterDTO
     {
         public string FirstName { get; set; }
@@ -17,6 +24,7 @@ namespace Airbnb.Domain.DataTransferObjects
         public IFormFile? Image { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
+        public Role role { get; set; }
 
     }
 }

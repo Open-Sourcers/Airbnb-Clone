@@ -56,6 +56,7 @@ namespace Airbnb.Application.Services
                 PasswordHash = user.Password,
                 PhoneNumber = user.PhoneNumber,
                 ProfileImage = "Built Upload Image To User Image URL",
+                
             };
             var IsCreated =await _userManager.CreateAsync(account, account.PasswordHash);
             if (!IsCreated.Succeeded)
@@ -64,6 +65,12 @@ namespace Airbnb.Application.Services
             }
             else
             {
+                var roles = new List<string> { user.role.ToString() }; 
+                var addToRolesResult = await _userManager.AddToRolesAsync(account, roles); 
+                if (!addToRolesResult.Succeeded)
+                {
+                    return await Responses.FailurResponse(addToRolesResult.Errors);
+                }
                 return await Responses.SuccessResponse(await _authService.CreateTokenAsync(account, _userManager), "Account Has Been Created Successfully");
             }
         }
