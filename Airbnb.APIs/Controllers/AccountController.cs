@@ -5,8 +5,6 @@ using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 namespace Airbnb.APIs.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
     public class AccountController : APIBaseController
     {
         private readonly IUserService _userService;

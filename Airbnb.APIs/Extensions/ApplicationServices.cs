@@ -1,5 +1,6 @@
 ﻿using Airbnb.APIs.Validators;
 using Airbnb.Application.Services;
+using Airbnb.Application.Settings;
 using Airbnb.Domain.Identity;
 using Airbnb.Domain.Interfaces.Repositories;
 using Airbnb.Domain.Interfaces.Services;
@@ -28,7 +29,8 @@ namespace Airbnb.APIs.Extensions
             Services.AddScoped<IAuthService, AuthService>();
             Services.AddScoped<IUserService, UserService>();
             Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+            Services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
+            Services.AddTransient<IMailService, MailService>();
             Services.AddFluentValidation(fv =>
             {
                 fv.RegisterValidatorsFromAssembly(typeof(CreateAccountValidator).Assembly);
