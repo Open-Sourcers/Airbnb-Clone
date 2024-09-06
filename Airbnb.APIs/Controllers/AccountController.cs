@@ -21,25 +21,22 @@ namespace Airbnb.APIs.Controllers
         [HttpPost("Login")]
         public async Task<ActionResult<Responses>> Login(LoginDTO userDto)
         {
-            var validate =await _loginValidator.ValidateAsync(userDto);
+            var validate = await _loginValidator.ValidateAsync(userDto);
             if (!validate.IsValid)
             {
                 return await Responses.FailurResponse(validate.Errors);
             }
-            return await _userService.Login(userDto);
+            return Ok(await _userService.Login(userDto));
         }
         [HttpPost("Register")]
         public async Task<ActionResult<Responses>> Register(RegisterDTO userDto)
         {
-            var validate=await _registerValidator.ValidateAsync(userDto);
+            var validate = await _registerValidator.ValidateAsync(userDto);
             if (!validate.IsValid)
             {
                 return await Responses.FailurResponse(validate.Errors.ToString());
             }
-            else
-            {
-                return await _userService.Register(userDto);
-            }
+            return Ok(await _userService.Register(userDto));
         }
     }
 }
