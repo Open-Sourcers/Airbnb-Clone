@@ -1,5 +1,4 @@
-﻿
-using Airbnb.Application.Settings;
+﻿using Airbnb.Application.Settings;
 using Airbnb.Domain.Interfaces.Services;
 using MailKit.Net.Smtp;
 using MailKit.Security;
@@ -11,46 +10,41 @@ namespace Airbnb.Application.Services
 {
     public class MailService : IMailService
     {
-        private readonly IOptions<MailSettings> _options;
+        private readonly MailSettings _options;
 
         public MailService(IOptions<MailSettings> options)
         {
-            _options = options;
+            _options = options.Value;
         }
+
         public async Task SendEmailAsync(string mailTo, string subject, string body, IList<IFormFile>? attachedFiles = null)
         {
-            var email = new MimeMessage
-            {
-                Sender = MailboxAddress.Parse(_options.Value.Email),
-                Subject = subject
-            };
-
+            var email = new MimeMessage();
+            email.Sender = MailboxAddress.Parse(_options.Email);
             email.To.Add(MailboxAddress.Parse(mailTo));
+            email.Subject = subject;
             var builder = new BodyBuilder();
-
-            if(attachedFiles != null)
+            if (attachedFiles != null)
             {
-                byte[] filesBytes;
-
+                byte[] fileBytes;
                 foreach (var file in attachedFiles)
                 {
-                    if(file.Length > 0)
+                    if (file.Length > 0)
                     {
-                        using var ms = new MemoryStream();
-                        file.CopyTo(ms);
-                        filesBytes = ms.ToArray();
-                        builder.Attachments.Add(file.FileName,  filesBytes, ContentType.Parse(file.ContentType));
+                        using (var ms = new MemoryStream())
+                        {
+                            file.CopyTo(ms);
+                            fileBytes = ms.ToArray();
+                        }
+                        builder.Attachments.Add(file.FileName, fileBytes, ContentType.Parse(file.ContentType));
                     }
                 }
             }
             builder.HtmlBody = body;
             email.Body = builder.ToMessageBody();
-            email.From.Add(new MailboxAddress(_options.Value.DisplayName, _options.Value.Email));
-
             using var smtp = new SmtpClient();
-
-            smtp.Connect(_options.Value.Host, _options.Value.Port, SecureSocketOptions.StartTls);
-            smtp.Authenticate(_options.Value.Email, _options.Value.Password);
+            smtp.Connect(_options.Host, _options.Port, SecureSocketOptions.StartTls);
+            smtp.Authenticate(_options.Email, _options.Password);
             await smtp.SendAsync(email);
             smtp.Disconnect(true);
         }

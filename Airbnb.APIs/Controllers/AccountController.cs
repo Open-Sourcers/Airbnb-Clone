@@ -36,5 +36,11 @@ namespace Airbnb.APIs.Controllers
             }
             return Ok(await _userService.Register(userDto));
         }
+
+        [HttpPost("EmailConfirmation")]
+        public async Task<ActionResult<Responses>> EmailConfirmation(string? email, string? code)
+        {
+            return Ok(await _userService.EmailConfirmation(email, code));
+        }
     }
 }

@@ -19,12 +19,17 @@ namespace Airbnb.APIs.Extensions
             Services.AddDbContext<AirbnbDbContext>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("RemoteConnection"));
+                //options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
                 options.UseLazyLoadingProxies();
             });
             // Identity Configurations
-            Services.AddIdentity<AppUser, IdentityRole>()
-                    .AddEntityFrameworkStores<AirbnbDbContext>()
-                    .AddDefaultTokenProviders();
+            Services.AddIdentity<AppUser, IdentityRole>(options =>
+            {
+                options.SignIn.RequireConfirmedEmail = true;
+                options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
+            })
+            .AddEntityFrameworkStores<AirbnbDbContext>()
+            .AddDefaultTokenProviders();
 
             Services.AddScoped<IAuthService, AuthService>();
             Services.AddScoped<IUserService, UserService>();
