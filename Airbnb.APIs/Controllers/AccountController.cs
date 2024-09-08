@@ -5,8 +5,6 @@ using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 namespace Airbnb.APIs.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
     public class AccountController : APIBaseController
     {
         private readonly IUserService _userService;
@@ -41,6 +39,7 @@ namespace Airbnb.APIs.Controllers
             return Ok(await _userService.Register(userDto));
         }
 
+<<<<<<< HEAD
         [HttpPost("ResetPassword")]
         public async Task<ActionResult<Responses>> ResetPassword(ResetPasswordDTO resetpasssword)
         {
@@ -50,6 +49,12 @@ namespace Airbnb.APIs.Controllers
                 return await Responses.FailurResponse(validate.Errors.ToString);
             }
             return Ok(await _userService.ResetPassword(resetpasssword));
+=======
+        [HttpPost("EmailConfirmation")]
+        public async Task<ActionResult<Responses>> EmailConfirmation(string? email, string? code)
+        {
+            return Ok(await _userService.EmailConfirmation(email, code));
+>>>>>>> c49054459ef8de84058b2f4790d3b8bd3c1cc5f7
         }
     }
 }

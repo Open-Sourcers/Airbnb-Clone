@@ -1,5 +1,6 @@
 using Airbnb.APIs.Extensions;
 using Airbnb.APIs.Utility;
+using Airbnb.Application.Services;
 using Airbnb.Domain.Interfaces.Repositories;
 using Airbnb.Infrastructure.Data;
 using Airbnb.Infrastructure.Repositories;
@@ -16,12 +17,12 @@ namespace Airbnb.APIs
 
             builder.Services.AddControllers();
             //builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
-            
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddApplicationServices(builder.Configuration);
-
+            
             var app = builder.Build();
             // Apply Pending Migrations on Database
             await ExtensionMethods.ApplyMigrations(app);
