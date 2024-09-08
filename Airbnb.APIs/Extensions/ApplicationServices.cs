@@ -1,5 +1,6 @@
 ﻿using Airbnb.APIs.Validators;
 using Airbnb.Application.Services;
+using Airbnb.Application.Settings;
 using Airbnb.Domain.Identity;
 using Airbnb.Domain.Interfaces.Repositories;
 using Airbnb.Domain.Interfaces.Services;
@@ -18,17 +19,23 @@ namespace Airbnb.APIs.Extensions
             Services.AddDbContext<AirbnbDbContext>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("RemoteConnection"));
+                //options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
                 options.UseLazyLoadingProxies();
             });
             // Identity Configurations
-            Services.AddIdentity<AppUser, IdentityRole>()
-                    .AddEntityFrameworkStores<AirbnbDbContext>()
-                    .AddDefaultTokenProviders();
+            Services.AddIdentity<AppUser, IdentityRole>(options =>
+            {
+                options.SignIn.RequireConfirmedEmail = true;
+                options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
+            })
+            .AddEntityFrameworkStores<AirbnbDbContext>()
+            .AddDefaultTokenProviders();
 
             Services.AddScoped<IAuthService, AuthService>();
             Services.AddScoped<IUserService, UserService>();
             Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+            Services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
+            Services.AddTransient<IMailService, MailService>();
             Services.AddFluentValidation(fv =>
             {
                 fv.RegisterValidatorsFromAssembly(typeof(CreateAccountValidator).Assembly);

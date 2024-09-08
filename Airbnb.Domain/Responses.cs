@@ -15,6 +15,14 @@ namespace Airbnb.Domain
         public Dictionary<string, List<string>> Errors { get; set; }
 
         #region SuccessResponses
+        public static async Task<Responses> SuccessResponse(string? Message)
+        {
+            return new Responses
+            {
+                IsSuccess = true,
+                Message = Message,
+            };
+        }
         public static async Task<Responses> SuccessResponse(object Token, string message)
         {
             return new Responses
