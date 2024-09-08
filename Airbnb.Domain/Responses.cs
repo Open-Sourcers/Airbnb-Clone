@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,16 +10,19 @@ namespace Airbnb.Domain
 {
     public class Responses
     {
+        public HttpStatusCode StatusCode { get; set; } = HttpStatusCode.OK;
         public bool IsSuccess { get; set; }
         public string Message { get; set; }
         public object? Data { get; set; }
         public Dictionary<string, List<string>> Errors { get; set; }
+        public Responses(HttpStatusCode statusCode = HttpStatusCode.OK) => StatusCode = statusCode;
 
         #region SuccessResponses
         public static async Task<Responses> SuccessResponse(string? Message)
         {
             return new Responses
             {
+                StatusCode=HttpStatusCode.OK,
                 IsSuccess = true,
                 Message = Message,
             };
@@ -27,6 +31,7 @@ namespace Airbnb.Domain
         {
             return new Responses
             {
+                StatusCode=HttpStatusCode.OK,
                 IsSuccess = true,
                 Message = message,
                 Data = Token
@@ -36,6 +41,7 @@ namespace Airbnb.Domain
         {
             return new Responses
             {
+                StatusCode=HttpStatusCode.OK,
                 IsSuccess = true,
                 Data = Email,
                 Message = message
@@ -50,6 +56,16 @@ namespace Airbnb.Domain
         {
             return new Responses
             {
+                StatusCode=HttpStatusCode.BadRequest,
+                IsSuccess = false,
+                Message = Message,
+            };
+        }
+        public static async Task<Responses> FailurResponse(string? Message,HttpStatusCode statusCode)
+        {
+            return new Responses
+            {
+                StatusCode = statusCode,
                 IsSuccess = false,
                 Message = Message,
             };
@@ -61,7 +77,24 @@ namespace Airbnb.Domain
                 IsSuccess = false,
                 Data = Errors
             };
-        } 
+        }
+        public static async Task<Responses> FailurResponse(HttpStatusCode statusCode)
+        {
+            return new Responses
+            {
+                StatusCode=statusCode,
+                IsSuccess = false,
+            };
+        }
+        public static async Task<Responses> FailurResponse(object? Errors, HttpStatusCode statusCode)
+        {
+            return new Responses
+            {
+                IsSuccess = false,
+                StatusCode = statusCode,
+                Data = Errors
+            };
+        }
         #endregion
     }
 }

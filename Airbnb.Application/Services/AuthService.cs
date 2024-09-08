@@ -23,6 +23,7 @@ namespace Airbnb.Application.Services
         {
             var userClaims = new List<Claim>()
             {
+                new Claim(ClaimTypes.NameIdentifier,user.Id),
                 new Claim(ClaimTypes.Name,user.FullName),
                 new Claim(ClaimTypes.Email,user.Email),
             };
@@ -34,12 +35,13 @@ namespace Airbnb.Application.Services
             }
 
             var authKeyInByets = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Token:Key"]));
+           
             var JwtObject = new JwtSecurityToken(
                 issuer: _configuration["Token:Issuer"],
                 audience: _configuration["Token:Audience"],
-                expires: DateTime.Now.AddDays(double.Parse(_configuration["Token:ExpiryDays"])),
                 claims: userClaims,
-                signingCredentials: new SigningCredentials(authKeyInByets, SecurityAlgorithms.HmacSha256Signature)
+                expires: DateTime.Now.AddDays(double.Parse(_configuration["Token:ExpiryDays"])),
+                signingCredentials: new SigningCredentials(authKeyInByets, SecurityAlgorithms.HmacSha256/*HmacSha256Signature*/)
             );
             return new JwtSecurityTokenHandler().WriteToken(JwtObject);
         }

@@ -2,7 +2,9 @@
 using Airbnb.Domain.DataTransferObjects;
 using Airbnb.Domain.Interfaces.Services;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 namespace Airbnb.APIs.Controllers
 {
     public class AccountController : APIBaseController
@@ -39,7 +41,7 @@ namespace Airbnb.APIs.Controllers
             return Ok(await _userService.Register(userDto));
         }
 
-<<<<<<< HEAD
+        [Authorize]
         [HttpPost("ResetPassword")]
         public async Task<ActionResult<Responses>> ResetPassword(ResetPasswordDTO resetpasssword)
         {
@@ -48,13 +50,14 @@ namespace Airbnb.APIs.Controllers
             {
                 return await Responses.FailurResponse(validate.Errors.ToString);
             }
-            return Ok(await _userService.ResetPassword(resetpasssword));
-=======
+            var email = User.FindFirstValue(ClaimTypes.Email);
+
+            return Ok(await _userService.ResetPassword(resetpasssword, email));
+        }
         [HttpPost("EmailConfirmation")]
         public async Task<ActionResult<Responses>> EmailConfirmation(string? email, string? code)
         {
             return Ok(await _userService.EmailConfirmation(email, code));
->>>>>>> c49054459ef8de84058b2f4790d3b8bd3c1cc5f7
         }
     }
 }

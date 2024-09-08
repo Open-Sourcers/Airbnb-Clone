@@ -11,7 +11,7 @@ namespace Airbnb.APIs.Validators
                 .NotEmpty().WithMessage("First name is required.")
                 .Length(2, 50).WithMessage("First name must be between 2 and 50 characters.");
 
-            RuleFor(x => x.MiddltName)
+            RuleFor(x => x.MiddlName)
                 .MaximumLength(50).WithMessage("Middle name cannot exceed 50 characters.");
 
             RuleFor(x => x.LastName)

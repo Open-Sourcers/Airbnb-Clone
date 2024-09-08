@@ -19,7 +19,6 @@ namespace Airbnb.APIs.Extensions
             Services.AddDbContext<AirbnbDbContext>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("RemoteConnection"));
-                //options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
                 options.UseLazyLoadingProxies();
             });
             // Identity Configurations
@@ -34,12 +33,11 @@ namespace Airbnb.APIs.Extensions
             Services.AddScoped<IAuthService, AuthService>();
             Services.AddScoped<IUserService, UserService>();
             Services.AddScoped<IUnitOfWork, UnitOfWork>();
-<<<<<<< HEAD
             Services.AddHttpContextAccessor();
-=======
+
             Services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
             Services.AddTransient<IMailService, MailService>();
->>>>>>> c49054459ef8de84058b2f4790d3b8bd3c1cc5f7
+
             Services.AddFluentValidation(fv =>
             {
                 fv.RegisterValidatorsFromAssembly(typeof(CreateAccountValidator).Assembly);
