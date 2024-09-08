@@ -12,11 +12,13 @@ namespace Airbnb.APIs.Controllers
         private readonly IUserService _userService;
         private readonly IValidator<LoginDTO> _loginValidator;
         private readonly IValidator<RegisterDTO> _registerValidator;
-        public AccountController(IUserService userService, IValidator<LoginDTO> loginValidator, IValidator<RegisterDTO> registerValidator)
+        private readonly IValidator<ResetPasswordDTO> _resetPasswordValidator;
+        public AccountController(IUserService userService, IValidator<LoginDTO> loginValidator, IValidator<RegisterDTO> registerValidator, IValidator<ResetPasswordDTO> resetPasswordValidator)
         {
             _userService = userService;
             _loginValidator = loginValidator;
             _registerValidator = registerValidator;
+            _resetPasswordValidator = resetPasswordValidator;
         }
         [HttpPost("Login")]
         public async Task<ActionResult<Responses>> Login(LoginDTO userDto)
@@ -37,6 +39,17 @@ namespace Airbnb.APIs.Controllers
                 return await Responses.FailurResponse(validate.Errors.ToString());
             }
             return Ok(await _userService.Register(userDto));
+        }
+
+        [HttpPost("ResetPassword")]
+        public async Task<ActionResult<Responses>> ResetPassword(ResetPasswordDTO resetpasssword)
+        {
+            var validate = await _resetPasswordValidator.ValidateAsync(resetpasssword);
+            if (!validate.IsValid)
+            {
+                return await Responses.FailurResponse(validate.Errors.ToString);
+            }
+            return Ok(await _userService.ResetPassword(resetpasssword));
         }
     }
 }

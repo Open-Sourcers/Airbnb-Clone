@@ -24,6 +24,15 @@ namespace Airbnb.Domain
                 Data = Token
             };
         }
+        public static async Task<Responses> SuccessResponse(string Email,string message)
+        {
+            return new Responses
+            {
+                IsSuccess = true,
+                Data = Email,
+                Message = message
+            };
+        }
         #endregion
 
 

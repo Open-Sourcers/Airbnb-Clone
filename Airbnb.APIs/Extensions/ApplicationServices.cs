@@ -28,7 +28,7 @@ namespace Airbnb.APIs.Extensions
             Services.AddScoped<IAuthService, AuthService>();
             Services.AddScoped<IUserService, UserService>();
             Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+            Services.AddHttpContextAccessor();
             Services.AddFluentValidation(fv =>
             {
                 fv.RegisterValidatorsFromAssembly(typeof(CreateAccountValidator).Assembly);
