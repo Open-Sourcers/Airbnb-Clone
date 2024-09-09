@@ -109,7 +109,7 @@ namespace Airbnb.Application.Services
             var result = await _userManager.ResetPasswordAsync(user,token,resetPassword.NewPassword);
             if (!result.Succeeded)
             {
-                return await Responses.FailurResponse("Un Expected Error Try Again.",HttpStatusCode.Forbidden);
+                return await Responses.FailurResponse("Un Expected Error Try Again.",HttpStatusCode.InternalServerError);
             }
             return await Responses.SuccessResponse(email, "Your Password Updated Successfully.");
         }
