@@ -13,13 +13,14 @@ namespace Airbnb.APIs
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddControllers();
-            //builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            await builder.Services.JWTConfigurations(builder.Configuration);
             builder.Services.AddApplicationServices(builder.Configuration);
             
             var app = builder.Build();
@@ -35,6 +36,7 @@ namespace Airbnb.APIs
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();

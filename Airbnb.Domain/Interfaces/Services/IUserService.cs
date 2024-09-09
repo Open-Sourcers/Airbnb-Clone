@@ -7,6 +7,7 @@ namespace Airbnb.Domain.Interfaces.Services
     {
         Task<Responses> Login(LoginDTO userDot);
         Task<Responses> Register(RegisterDTO user);
+        Task<Responses> ResetPassword(ResetPasswordDTO resetPassword, string? email);
         Task<Responses> EmailConfirmation(string? email, string? code);
     }
 }

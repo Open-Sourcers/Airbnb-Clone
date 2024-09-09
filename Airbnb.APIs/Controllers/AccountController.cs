@@ -2,7 +2,9 @@
 using Airbnb.Domain.DataTransferObjects;
 using Airbnb.Domain.Interfaces.Services;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 namespace Airbnb.APIs.Controllers
 {
     public class AccountController : APIBaseController
@@ -10,11 +12,13 @@ namespace Airbnb.APIs.Controllers
         private readonly IUserService _userService;
         private readonly IValidator<LoginDTO> _loginValidator;
         private readonly IValidator<RegisterDTO> _registerValidator;
-        public AccountController(IUserService userService, IValidator<LoginDTO> loginValidator, IValidator<RegisterDTO> registerValidator)
+        private readonly IValidator<ResetPasswordDTO> _resetPasswordValidator;
+        public AccountController(IUserService userService, IValidator<LoginDTO> loginValidator, IValidator<RegisterDTO> registerValidator, IValidator<ResetPasswordDTO> resetPasswordValidator)
         {
             _userService = userService;
             _loginValidator = loginValidator;
             _registerValidator = registerValidator;
+            _resetPasswordValidator = resetPasswordValidator;
         }
         [HttpPost("Login")]
         public async Task<ActionResult<Responses>> Login(LoginDTO userDto)
@@ -37,6 +41,19 @@ namespace Airbnb.APIs.Controllers
             return Ok(await _userService.Register(userDto));
         }
 
+        [Authorize]
+        [HttpPost("ResetPassword")]
+        public async Task<ActionResult<Responses>> ResetPassword(ResetPasswordDTO resetpasssword)
+        {
+            var validate = await _resetPasswordValidator.ValidateAsync(resetpasssword);
+            if (!validate.IsValid)
+            {
+                return await Responses.FailurResponse(validate.Errors.ToString);
+            }
+            var email = User.FindFirstValue(ClaimTypes.Email);
+
+            return Ok(await _userService.ResetPassword(resetpasssword, email));
+        }
         [HttpPost("EmailConfirmation")]
         public async Task<ActionResult<Responses>> EmailConfirmation(string? email, string? code)
         {
