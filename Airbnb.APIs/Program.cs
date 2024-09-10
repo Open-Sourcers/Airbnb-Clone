@@ -1,4 +1,6 @@
+using Airbnb.APIs.Extensions;
 using Airbnb.APIs.Utility;
+using Airbnb.Application.Services;
 using Airbnb.Domain.Interfaces.Repositories;
 using Airbnb.Infrastructure.Data;
 using Airbnb.Infrastructure.Repositories;
@@ -11,23 +13,19 @@ namespace Airbnb.APIs
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
-            // Add services to the container.
+            builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddControllers();
-            builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddDbContext<AirbnbDbContext>(options =>
-            {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-                options.UseLazyLoadingProxies();
-            });
 
+            await builder.Services.JWTConfigurations(builder.Configuration);
+            builder.Services.AddApplicationServices(builder.Configuration);
+            
             var app = builder.Build();
-
-            await (ExtensionMethods.ApplyMigrations(app));
+            // Apply Pending Migrations on Database
+            await ExtensionMethods.ApplyMigrations(app);
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -38,6 +36,7 @@ namespace Airbnb.APIs
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
