@@ -16,7 +16,7 @@ namespace Airbnb.Domain.Entities
 
 		public virtual Property Property { get; set; }
 		[ForeignKey("Property")]
-		public int PropertyId { get; set; }
+		public string PropertyId { get; set; }
 
         public virtual AppUser User { get; set; }
         [ForeignKey("User")]

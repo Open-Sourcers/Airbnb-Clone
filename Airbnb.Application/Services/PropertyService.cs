@@ -1,20 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.AccessControl;
-using System.Text;
-using System.Threading.Tasks;
-using Airbnb.Domain;
+﻿using Airbnb.Domain;
 using Airbnb.Domain.DataTransferObjects;
 using Airbnb.Domain.Entities;
 using Airbnb.Domain.Identity;
 using Airbnb.Domain.Interfaces.Repositories;
 using Airbnb.Domain.Interfaces.Services;
 using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using MimeKit.Cryptography;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Net;
 using Property = Airbnb.Domain.Entities.Property;
 
 namespace Airbnb.Application.Services
@@ -30,65 +23,127 @@ namespace Airbnb.Application.Services
             _unitOfWork = unitOfWork;
             _userManager = userManager;
         }
-        public async Task<Responses> CreatePropertyAsync(AppUser user,PropertyDTO propertyDTO)
+        public async Task<Responses> CreatePropertyAsync(string? email,PropertyDTO propertyDTO)
         {
+            var owner = await _userManager.FindByEmailAsync(email);
+
+            var region = await _unitOfWork.Repository<Region, int>().GetByIdAsync(propertyDTO.Region.Id);
+            if (region == null)
+            {
+                region.Name = propertyDTO.Name;
+
+                await _unitOfWork.Repository<Region, int>().AddAsync(region);
+                if (await _unitOfWork.CompleteAsync() <= 0)
+                {
+                    return await Responses.FailurResponse("Region is not valid data!", HttpStatusCode.InternalServerError);
+                }
+            }
+
+            var country = await _unitOfWork.Repository<Country, int>().GetByIdAsync(propertyDTO.Country.Id);
+            if (country == null)
+            {
+                country.Name = propertyDTO.Name;
+
+                await _unitOfWork.Repository<Country, int>().AddAsync(country);
+                if (await _unitOfWork.CompleteAsync() <= 0)
+                {
+                    return await Responses.FailurResponse("Country is not valid data!", HttpStatusCode.InternalServerError);
+                }
+            }
+           
+            var location = await _unitOfWork.Repository<Location, int>().GetByIdAsync(propertyDTO.Country.Id);
+            if (location == null)
+            {
+                location.Name = propertyDTO.Name;
+
+                await _unitOfWork.Repository<Location, int>().AddAsync(location);
+                if (await _unitOfWork.CompleteAsync() <= 0)
+                {
+                    return await Responses.FailurResponse("Location is not valid data!", HttpStatusCode.InternalServerError);
+                }
+            }
+
+            var images = new List<Image>();
+            foreach(var i in propertyDTO.Images)
+            {
+                // upload image and take his url to assign it for object of images and add it in images list 
+            }
+
+            var roomServices = new List<RoomService>();
+            foreach (var i in propertyDTO.Images)
+            {
+                // map every object from string to room service 
+            }
+            string PropertyId = Guid.NewGuid().ToString();
+            var categories = new List<PropertyCategory>();
+            foreach (var i in propertyDTO.Categories)
+            {
+                var category = await _unitOfWork.Repository<Category, int>().GetByIdAsync(i.Id);
+                if (categories == null)
+                {
+                    return await Responses.FailurResponse(i, HttpStatusCode.NotFound);
+                }
+                categories.Add(new PropertyCategory()
+                {
+                    CategoryId = i.Id,
+                    PropertyId = PropertyId
+                }) ;
+            }
             var MappedProperty = new Property()
             {
-                Name = propertyDTO.Name,
+
+                Name = PropertyId,
                 Description = propertyDTO.Description,
                 NightPrice = propertyDTO.NightPrice,
                 PlaceType = propertyDTO.PlaceType,
-                Location = propertyDTO.Location,
-                Owner = user,
-                Images = propertyDTO.Images,
-                Categories = propertyDTO.Categories,
-                RoomServices = propertyDTO.RoomServices
+                Location = location,
+                Owner = owner,
+                Images = images,
+                Categories=categories,
+                RoomServices = roomServices
             };
-            await _unitOfWork.Repository<Property, int>().AddAsync(MappedProperty);
+            await _unitOfWork.Repository<Property, string>().AddAsync(MappedProperty);
             var Result = await _unitOfWork.CompleteAsync();
             if (Result <= 0) return await Responses.FailurResponse(System.Net.HttpStatusCode.BadRequest);
+            
             return await Responses.SuccessResponse("Property has been created successfuly!");
         }
-
-        public async Task<Responses> DeletePropertyAsync(int propertyId)
+        public async Task<Responses> DeletePropertyAsync(string propertyId)
         {
-            var property = await _unitOfWork.Repository<Property, int>().GetByIdAsync(propertyId);
+            var property = await _unitOfWork.Repository<Property, string>().GetByIdAsync(propertyId);
             if (property == null) return await Responses.FailurResponse("There is no property with this id");
-            _unitOfWork.Repository<Property, int>().Remove(property);
+            _unitOfWork.Repository<Property, string>().Remove(property);
             var Result = await _unitOfWork.CompleteAsync();
             if (Result <= 0) return await Responses.FailurResponse("Error has been occured");
             return await Responses.SuccessResponse("Property has been deleted successfully!");
         }
-
         public async Task<Responses> GetAllPropertiesAsync()
         {
-            var properties = await _unitOfWork.Repository<Property, int>().GetAllAsync();
-            if(properties.Any()) return await Responses.FailurResponse("There is no properties found", System.Net.HttpStatusCode.NotFound);
+            var properties = await _unitOfWork.Repository<Property, string>().GetAllAsync();
+            if (properties.Any()) return await Responses.FailurResponse("There is no properties found", System.Net.HttpStatusCode.NotFound);
             return await Responses.SuccessResponse(properties);
         }
-
-        public async Task<Responses> GetPropertyByIdAsync(int propertyId)
+        public async Task<Responses> GetPropertyByIdAsync(string propertyId)
         {
-            var property = await _unitOfWork.Repository<Property, int>().GetByIdAsync(propertyId);
-            if(property == null) return await Responses.FailurResponse("Property is not found!", System.Net.HttpStatusCode.NotFound);
+            var property = await _unitOfWork.Repository<Property, string>().GetByIdAsync(propertyId);
+            if (property == null) return await Responses.FailurResponse("Property is not found!", System.Net.HttpStatusCode.NotFound);
             return await Responses.SuccessResponse(property);
         }
-
-        public async Task<Responses> UpdatePropertyAsync(int propertyId, PropertyDTO propertyDTO)
+        public async Task<Responses> UpdatePropertyAsync(string propertyId, PropertyDTO propertyDTO)
         {
-            var property = await _unitOfWork.Repository<Property, int>().GetByIdAsync(propertyId);
+            var property = await _unitOfWork.Repository<Property, string>().GetByIdAsync(propertyId);
             if (property == null) return await Responses.FailurResponse("Property is not found!", System.Net.HttpStatusCode.NotFound);
 
             property.Name = propertyDTO.Name;
             property.Description = propertyDTO.Description;
             property.NightPrice = propertyDTO.NightPrice;
             property.PlaceType = propertyDTO.PlaceType;
-            property.Location = propertyDTO.Location;
+            //property.Location = propertyDTO.Location;
             property.Owner = await _userManager.FindByEmailAsync(propertyDTO.Owner.Email);
-            property.Images = propertyDTO.Images;
-            property.Categories = propertyDTO.Categories;
+            //property.Images = propertyDTO.Images;
+            //property.Categories = propertyDTO.Categories;
 
-            _unitOfWork.Repository<Property, int>().Update(property);
+            _unitOfWork.Repository<Property, string>().Update(property);
             var Result = await _unitOfWork.CompleteAsync();
             if (Result <= 0) return await Responses.FailurResponse(System.Net.HttpStatusCode.InternalServerError);
             return await Responses.SuccessResponse("Property has been updated successfully!");

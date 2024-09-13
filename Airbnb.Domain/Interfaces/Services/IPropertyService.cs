@@ -11,10 +11,10 @@ namespace Airbnb.Domain.Interfaces.Services
     public interface IPropertyService
     {
         Task<Responses> GetAllPropertiesAsync();
-        Task<Responses> GetPropertyByIdAsync(int propertyId);
-        Task<Responses> CreatePropertyAsync(AppUser user, PropertyDTO propertyDTO);
-        Task<Responses> UpdatePropertyAsync(int propertyId, PropertyDTO propertyDTO);
-        Task<Responses> DeletePropertyAsync(int propertyId);
+        Task<Responses> GetPropertyByIdAsync(string propertyId);
+        Task<Responses> CreatePropertyAsync(string? email, PropertyDTO propertyDTO);
+        Task<Responses> UpdatePropertyAsync(string propertyId, PropertyDTO propertyDTO);
+        Task<Responses> DeletePropertyAsync(string propertyId);
 
     }
 }

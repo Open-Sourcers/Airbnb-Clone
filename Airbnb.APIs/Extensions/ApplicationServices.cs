@@ -20,7 +20,7 @@ namespace Airbnb.APIs.Extensions
         {
             Services.AddDbContext<AirbnbDbContext>(options =>
             {
-                options.UseSqlServer(Configuration.GetConnectionString("RemoteConnection"));
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
                 options.UseLazyLoadingProxies();
             });
             // Identity Configurations
@@ -41,7 +41,7 @@ namespace Airbnb.APIs.Extensions
                 cfg.ShouldUseConstructor = ci => !ci.DeclaringType.IsAbstract && !ci.DeclaringType.IsInterface;
             });
             Services.AddSingleton(config.CreateMapper());
-
+            Services.AddScoped<IPropertyService,PropertyService>();
             Services.AddScoped<IAuthService, AuthService>();
             Services.AddScoped<IUserService, UserService>();
             Services.AddScoped<IUnitOfWork, UnitOfWork>();

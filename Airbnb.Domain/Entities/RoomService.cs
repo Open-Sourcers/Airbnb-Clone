@@ -11,7 +11,7 @@ namespace Airbnb.Domain.Entities
     {
         public string Decscription {  get; set; } = string.Empty;
         [ForeignKey("Property")]
-        public int PropertyId { get; set; }
+        public string PropertyId { get; set; }
         public virtual Property property { get; set; }
 
 

@@ -11,7 +11,7 @@ namespace Airbnb.Domain.Interfaces.Services
     {
         Task<Review> GetReviewAsync(int id);
         Task<IEnumerable<Review>> GetAllReviewsAsync();
-        Task<IEnumerable<Review>> GetReviewsByPropertyIdAsync(int propertyId);
+        Task<IEnumerable<Review>> GetReviewsByPropertyIdAsync(string propertyId);
         Task AddReviewAsync(Review review); // we could use ReviewDTO instead
         Task DeleteReviewAsync(int id);
 
