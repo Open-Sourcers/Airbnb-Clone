@@ -35,7 +35,7 @@ namespace Airbnb.APIs.Extensions
             // AutoMapper Configuration
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.AddProfile<UserProfile>();
+                cfg.AddProfile<MappingProfiles>();
                 // Configure AutoMapper to ignore proxy types and map base types
                 cfg.ShouldMapProperty = p => !p.GetMethod.IsVirtual || p.GetMethod.IsFinal;
                 cfg.ShouldUseConstructor = ci => !ci.DeclaringType.IsAbstract && !ci.DeclaringType.IsInterface;

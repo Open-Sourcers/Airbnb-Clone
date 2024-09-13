@@ -24,7 +24,7 @@ namespace Airbnb.Domain.Entities
 
 		public virtual ICollection<PropertyCategory> Categories { get; set; } = new HashSet<PropertyCategory>();
 
-		public virtual ICollection<Review> Reviews { get; set; }=new HashSet<Review>();
+		public virtual ICollection<Review> Reviews { get; set; } = new HashSet<Review>();
 
 
         public virtual ICollection<RoomService> RoomServices { get; set; } = new List<RoomService>();
