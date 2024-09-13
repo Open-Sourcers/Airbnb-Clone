@@ -21,6 +21,6 @@ namespace Airbnb.Domain.Identity
         public virtual ICollection<Booking> Bookings { get; set; } = new HashSet<Booking>();
         public virtual ICollection <Property> Properties { get; set; } = new HashSet<Property>();
         public virtual ICollection<Review> Reviews { get; set; } = new HashSet<Review>();
-        public string ProfileImage { get; set; }
+        public string? ProfileImage { get; set; }
     }
 }
