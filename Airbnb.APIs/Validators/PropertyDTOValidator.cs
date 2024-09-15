@@ -26,8 +26,8 @@ namespace Airbnb.APIs.Validators
             RuleFor(p => p.Images)
                 .Must(images => images != null && images.Any()).WithMessage("At least one image is required.");
 
-            RuleFor(p => p.Categories)
-                .Must(categories => categories != null && categories.Any()).WithMessage("At least one category is required.");
+            //RuleFor(p => p.Categories)
+            //    .Must(categories => categories != null && categories.Any()).WithMessage("At least one category is required.");
 
             RuleFor(p => p.RoomServices)
                 .Must(roomServices => roomServices != null && roomServices.Any()).WithMessage("At least one room service is required.");

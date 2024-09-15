@@ -30,10 +30,14 @@ namespace Airbnb.Application.Services
             var region = await _unitOfWork.Repository<Region, int>().GetByIdAsync(propertyDTO.Region.Id);
             if (region == null)
             {
-                region.Name = propertyDTO.Name;
+                var MappedRegion = new Region()
+                {
+                    Name = propertyDTO.Region.Name
+                };
 
-                await _unitOfWork.Repository<Region, int>().AddAsync(region);
-                if (await _unitOfWork.CompleteAsync() <= 0)
+                await _unitOfWork.Repository<Region, int>().AddAsync(MappedRegion);
+                var IsComplete = await _unitOfWork.CompleteAsync();
+                if (IsComplete <= 0)
                 {
                     return await Responses.FailurResponse("Region is not valid data!", HttpStatusCode.InternalServerError);
                 }
@@ -42,22 +46,32 @@ namespace Airbnb.Application.Services
             var country = await _unitOfWork.Repository<Country, int>().GetByIdAsync(propertyDTO.Country.Id);
             if (country == null)
             {
-                country.Name = propertyDTO.Name;
+                var MappedCountry = new Country()
+                {
+                    Name = propertyDTO.Country.Name,
+                    RegionId = propertyDTO.Region.Id,
+                };
 
-                await _unitOfWork.Repository<Country, int>().AddAsync(country);
-                if (await _unitOfWork.CompleteAsync() <= 0)
+                await _unitOfWork.Repository<Country, int>().AddAsync(MappedCountry);
+                var IsComplete = await _unitOfWork.CompleteAsync();
+                if (IsComplete <= 0)
                 {
                     return await Responses.FailurResponse("Country is not valid data!", HttpStatusCode.InternalServerError);
                 }
             }
            
-            var location = await _unitOfWork.Repository<Location, int>().GetByIdAsync(propertyDTO.Country.Id);
+            var location = await _unitOfWork.Repository<Location, int>().GetByIdAsync(propertyDTO.Location.Id);
             if (location == null)
             {
-                location.Name = propertyDTO.Name;
+                var MappedLocation = new Location()
+                {
+                    Name = propertyDTO.Location.Name,
+                    CountryId = propertyDTO.Country.Id
+                };
 
-                await _unitOfWork.Repository<Location, int>().AddAsync(location);
-                if (await _unitOfWork.CompleteAsync() <= 0)
+                await _unitOfWork.Repository<Location, int>().AddAsync(MappedLocation);
+                var IsComplete = await _unitOfWork.CompleteAsync();
+                if (IsComplete <= 0)
                 {
                     return await Responses.FailurResponse("Location is not valid data!", HttpStatusCode.InternalServerError);
                 }
@@ -91,8 +105,8 @@ namespace Airbnb.Application.Services
             }
             var MappedProperty = new Property()
             {
-
-                Name = PropertyId,
+                Id = PropertyId,
+                Name = propertyDTO.Name,
                 Description = propertyDTO.Description,
                 NightPrice = propertyDTO.NightPrice,
                 PlaceType = propertyDTO.PlaceType,

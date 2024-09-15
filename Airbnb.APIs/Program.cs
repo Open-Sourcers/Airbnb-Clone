@@ -18,7 +18,7 @@ namespace Airbnb.APIs
             builder.Services.AddControllers();
 
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerConfigurations();
 
             await builder.Services.JWTConfigurations(builder.Configuration);
             builder.Services.AddApplicationServices(builder.Configuration);

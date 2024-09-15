@@ -10,33 +10,6 @@ using Microsoft.AspNetCore.Http;
 
 namespace Airbnb.Domain.DataTransferObjects
 {
-    public class LocationDto
-    {
-        public int Id { get; set; }
-        public string Name { get; set;}
-    }
-    public class RegionDto
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-    }
-    public class CountryDto
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-
-    }
-    public class OwnerDto
-    {
-        public string FullName { get; set; }
-        public string Email { get; set; }
-        public string PhoneNumber { get; set; }
-    }
-    public class CategoryDto
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-    }
     public class PropertyDTO
     {
         public string Name { get; set; }
@@ -47,8 +20,8 @@ namespace Airbnb.Domain.DataTransferObjects
         public RegionDto Region { get; set; }
         public CountryDto Country { get; set; }
         public OwnerDto Owner { get; set; }
-        public ICollection<IFormFile> Images { get; set; } = new HashSet<IFormFile>();
-        public ICollection<CategoryDto> Categories { get; set; } = new HashSet<CategoryDto>();
-        public ICollection<string> RoomServices { get; set; } = new List<string>();
+        public List<IFormFile> Images { get; set; }
+        public List<CategoryDto> Categories { get; set; } 
+        public List<string> RoomServices { get; set; }
     }
 }
