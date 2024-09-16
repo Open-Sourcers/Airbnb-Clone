@@ -22,7 +22,7 @@ namespace Airbnb.Domain
         {
             return new Responses
             {
-                StatusCode=HttpStatusCode.OK,
+                StatusCode = HttpStatusCode.OK,
                 IsSuccess = true,
                 Message = Message,
             };

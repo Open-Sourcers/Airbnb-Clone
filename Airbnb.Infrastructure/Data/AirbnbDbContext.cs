@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using Airbnb.Domain.Entities;
@@ -15,14 +16,19 @@ namespace Airbnb.Infrastructure.Data
     {
         public AirbnbDbContext(DbContextOptions<AirbnbDbContext> options) : base(options)
         {
-             
+
         }
-       
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<PropertyCategory>(E => {
+            builder.Entity<PropertyCategory>(E =>
+            {
                 E.HasKey(K => new { K.CategoryId, K.PropertyId });
             });
+
+            builder.Entity<Property>()
+                 .Property(p => p.Id)
+                 .ValueGeneratedNever();
 
             base.OnModelCreating(builder);
         }
@@ -35,6 +41,6 @@ namespace Airbnb.Infrastructure.Data
         public DbSet<PropertyCategory> PropertyCategories { get; set; }
         public DbSet<Region> Regions { get; set; }
         public DbSet<Review> Reviews { get; set; }
-        public DbSet <RoomService> roomServices { get; set; }
+        public DbSet<RoomService> roomServices { get; set; }
     }
 }

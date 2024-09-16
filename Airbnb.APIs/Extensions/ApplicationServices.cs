@@ -20,7 +20,7 @@ namespace Airbnb.APIs.Extensions
         {
             Services.AddDbContext<AirbnbDbContext>(options =>
             {
-                options.UseSqlServer(Configuration.GetConnectionString("RemoteConnection"));
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
                 options.UseLazyLoadingProxies();
             });
             // Identity Configurations
@@ -35,13 +35,13 @@ namespace Airbnb.APIs.Extensions
             // AutoMapper Configuration
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.AddProfile<UserProfile>();
+                cfg.AddProfile<MappingProfiles>();
                 // Configure AutoMapper to ignore proxy types and map base types
                 cfg.ShouldMapProperty = p => !p.GetMethod.IsVirtual || p.GetMethod.IsFinal;
                 cfg.ShouldUseConstructor = ci => !ci.DeclaringType.IsAbstract && !ci.DeclaringType.IsInterface;
             });
             Services.AddSingleton(config.CreateMapper());
-
+            Services.AddScoped<IPropertyService,PropertyService>();
             Services.AddScoped<IAuthService, AuthService>();
             Services.AddScoped<IUserService, UserService>();
             Services.AddScoped<IUnitOfWork, UnitOfWork>();

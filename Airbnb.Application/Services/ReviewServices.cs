@@ -48,9 +48,9 @@ namespace Airbnb.Application.Services
             return await _unitOfWork.Repository<Review, int>().GetByIdAsync(id);
         }
 
-        public async Task<IEnumerable<Review>> GetReviewsByPropertyIdAsync(int propertyId)
+        public async Task<IEnumerable<Review>> GetReviewsByPropertyIdAsync(string propertyId)
         {
-            var property = await _unitOfWork.Repository<Property, int>().GetByIdAsync(propertyId);
+            var property = await _unitOfWork.Repository<Property, string>().GetByIdAsync(propertyId);
             if (property == null)
             {
                 throw new KeyNotFoundException($"Property with ID {propertyId} not found.");
@@ -58,6 +58,8 @@ namespace Airbnb.Application.Services
 
             return property.Reviews;
         }
+
+       
     }
 
 }

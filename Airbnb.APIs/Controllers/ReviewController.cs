@@ -92,7 +92,7 @@ namespace Airbnb.APIs.Controllers
 
         // GET: api/Review/Property/{propertyId}
         [HttpGet("Property/{propertyId}")]
-        public async Task<IActionResult> GetReviewsByProperty(int propertyId)
+        public async Task<IActionResult> GetReviewsByProperty(string propertyId)
         {
             var reviews = await _reviewService.GetReviewsByPropertyIdAsync(propertyId);
             if (reviews != null && reviews.Any())

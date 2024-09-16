@@ -23,7 +23,5 @@ namespace Airbnb.Domain.Interfaces.Repositories
  
         void Update(TEntity entity);
         void Remove(TEntity entity);
-
-
     }
 }

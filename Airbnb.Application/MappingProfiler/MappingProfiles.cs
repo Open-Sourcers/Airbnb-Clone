@@ -1,12 +1,13 @@
 ﻿
 using Airbnb.Domain.DataTransferObjects;
+using Airbnb.Domain.Entities;
 using Airbnb.Domain.Identity;
 using AutoMapper;
 namespace Airbnb.Application.MappingProfiler
 {
-    public class UserProfile : Profile
+    public class MappingProfiles : Profile
     {
-        public UserProfile()
+        public MappingProfiles()
         {
             CreateMap<AppUser, UserDTO>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -27,8 +28,7 @@ namespace Airbnb.Application.MappingProfiler
             .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
             .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber));
 
-
-
+            CreateMap<PropertyDTO, Property>();
           }
     }
 }
