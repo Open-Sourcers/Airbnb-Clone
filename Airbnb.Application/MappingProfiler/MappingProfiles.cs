@@ -1,4 +1,5 @@
 ﻿
+using Airbnb.Application.Resolvers;
 using Airbnb.Domain.DataTransferObjects;
 using Airbnb.Domain.Entities;
 using Airbnb.Domain.Identity;
@@ -18,7 +19,8 @@ namespace Airbnb.Application.MappingProfiler
             .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
             .ForMember(dest => dest.Bookings, opt => opt.MapFrom(src => src.Bookings))
             .ForMember(dest => dest.Properties, opt => opt.MapFrom(src => src.Properties))
-            .ForMember(dest => dest.Reviews, opt => opt.MapFrom(src => src.Reviews));
+            .ForMember(dest => dest.Reviews, opt => opt.MapFrom(src => src.Reviews))
+            .ForMember(dest => dest.profileImage, opt => opt.MapFrom<UserResolver>());
 
             CreateMap<RegisterDTO, AppUser>()
             .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => $"{src.FirstName} {src.MiddlName} {src.LastName}".Trim()))
