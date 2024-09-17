@@ -12,6 +12,7 @@ using Airbnb.Application.Settings;
 using Airbnb.Application.Utility;
 using Castle.Core.Configuration;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 //using Microsoft.AspNetCore.Identity;
 
 
@@ -22,23 +23,23 @@ namespace Airbnb.Application.Services
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IAuthService _authService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMailService _mailService;
+        private readonly IMemoryCache _memoryCache;
         private readonly IMapper _mapper;
         public UserService(UserManager<AppUser> userManager,
                            SignInManager<AppUser> signInManager,
                            IAuthService authService,
                            IMailService mailService,
-                           IHttpContextAccessor httpContextAccessor,
-                           IMapper mapper)
+                           IMapper mapper,
+                           IMemoryCache memoryCache)
 
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _authService = authService;
             _mailService = mailService;
-            _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
+            _memoryCache = memoryCache;
         }
 
         public async Task<Responses> Login(LoginDTO userDto)
@@ -110,28 +111,6 @@ namespace Airbnb.Application.Services
             }
         }
 
-        public async Task<Responses> ResetPassword(ResetPasswordDTO resetPassword, string? email)
-        {
-            if (email is null)
-            {
-                return await Responses.FailurResponse(HttpStatusCode.NotFound);
-            }
-
-            var user = await _userManager.FindByEmailAsync(email);
-
-            if (!await _userManager.CheckPasswordAsync(user, resetPassword.CurrentPassword))
-            {
-                return await Responses.FailurResponse("Your Password in Correct!.");
-            }
-            // Exception Here
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var result = await _userManager.ResetPasswordAsync(user, token, resetPassword.NewPassword);
-            if (!result.Succeeded)
-            {
-                return await Responses.FailurResponse("Un Expected Error Try Again.", HttpStatusCode.InternalServerError);
-            }
-            return await Responses.SuccessResponse(email, "Your Password Updated Successfully.");
-        }
         public async Task<Responses> UpdateUser(AppUser user, UpdateUserDTO userDTO)
         {
             string FullName = userDTO.FirstName;
@@ -211,8 +190,51 @@ namespace Airbnb.Application.Services
                 {
                     return await Responses.FailurResponse(addToRolesResult.Errors, HttpStatusCode.InternalServerError);
                 }
-                return await Responses.SuccessResponse(userDto, "User created successfully!.");
+                var createduser = await _userManager.FindByEmailAsync(userDto.Email);
+                var result = _mapper.Map<UserDTO>(createduser);
+                return await Responses.SuccessResponse(result, "User created successfully!.");
             }
         }
+
+        public async Task<Responses> ForgetPassword(ForgetPasswordDto forgetPassword)
+        {
+            var user = await _userManager.FindByEmailAsync(forgetPassword.Email);
+            if (user == null)
+            {
+                return await Responses.FailurResponse("Email is not found!", HttpStatusCode.BadRequest);
+            }
+
+            var otp = new Random().Next(100000, 999999).ToString();
+            _memoryCache.Set(user.Email, otp, TimeSpan.FromMinutes(10));
+
+            await _mailService.SendEmailAsync(user.Email, "Reset password!", otp);
+
+            return await Responses.SuccessResponse("Check your email!");
+        }
+        public async Task<Responses> ResetPassword(ResetPasswordDTO resetPassword)
+        {
+
+            var user = await _userManager.FindByEmailAsync(resetPassword.Email);
+            if (user == null)
+            {
+                return await Responses.FailurResponse("Email is not found!");
+            }
+            if(!_memoryCache.TryGetValue(user.Email, out string Otp))
+            {
+                return await Responses.FailurResponse("Time expired.... try again!", HttpStatusCode.BadRequest);
+            }
+            if (Otp != resetPassword.Otp)
+            {
+                return await Responses.FailurResponse("Invalid Otp!", HttpStatusCode.BadRequest);
+            }
+            string token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user, token, resetPassword.NewPassword);
+            if (!result.Succeeded)
+            {
+                return await Responses.FailurResponse(result.Errors.ToList(), HttpStatusCode.InternalServerError);
+            }
+            return await Responses.SuccessResponse(user.Id, "Password updated successfully.");
+        }
+
     }
 }
