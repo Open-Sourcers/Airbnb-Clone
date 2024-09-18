@@ -47,18 +47,6 @@ namespace Airbnb.APIs.Controllers
             return Ok(await _userService.Register(userDto));
         }
 
-        
-        [HttpPut("ResetPassword")]
-        public async Task<ActionResult<Responses>> ResetPassword(ResetPasswordDTO resetpasssword)
-        {
-            var validate = await _resetPasswordValidator.ValidateAsync(resetpasssword);
-            if (!validate.IsValid)
-            {
-                return await Responses.FailurResponse(validate.Errors.ToString);
-            }
-
-            return Ok(await _userService.ResetPassword(resetpasssword));
-        }
         [HttpPost("EmailConfirmation")]
         public async Task<ActionResult<Responses>> EmailConfirmation(string? email, string? code)
         {
@@ -71,6 +59,17 @@ namespace Airbnb.APIs.Controllers
             var validation=await _forgetPasswordValidator.ValidateAsync(forgetPassword);
             if(!validation.IsValid)return await Responses.FailurResponse(validation.Errors.ToString());
             return Ok(await _userService.ForgetPassword(forgetPassword));
+        }
+        [HttpPut("ResetPassword")]
+        public async Task<ActionResult<Responses>> ResetPassword([FromBody]ResetPasswordDTO resetpasssword)
+        {
+            var validate = await _resetPasswordValidator.ValidateAsync(resetpasssword);
+            if (!validate.IsValid)
+            {
+                return await Responses.FailurResponse(validate.Errors.ToList());
+            }
+
+            return Ok(await _userService.ResetPassword(resetpasssword));
         }
     }
 }
