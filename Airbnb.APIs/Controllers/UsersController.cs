@@ -38,8 +38,8 @@ namespace Airbnb.APIs.Controllers
             var AllUsers = await _userManager.Users.ToListAsync();
             return Ok(await Responses.SuccessResponse(_mapper.Map<IEnumerable<UserDTO>>(AllUsers)));
         }
-        [HttpGet("GetUserById")]
-        public async Task<ActionResult<Responses>> GetUserById(string Id)
+        [HttpGet("GetUserById/{Id}")]
+        public async Task<ActionResult<Responses>> GetUserById([FromRoute] string Id)
         {
             var user = await _userManager.FindByIdAsync(Id);
             if (user == null)
@@ -49,8 +49,8 @@ namespace Airbnb.APIs.Controllers
             return Ok(await Responses.SuccessResponse(_mapper.Map<UserDTO>(user)));
         }
 
-        [HttpDelete("RemoveUser")]
-        public async Task<ActionResult<Responses>> RemoveUser(string Id)
+        [HttpDelete("RemoveUser/{Id}")]
+        public async Task<ActionResult<Responses>> RemoveUser([FromRoute]string Id)
         {
 
             var user = await _userManager.FindByIdAsync(Id);
@@ -69,7 +69,7 @@ namespace Airbnb.APIs.Controllers
         }
 
         [HttpPost("CreateUser")]
-        public async Task<ActionResult<Responses>> CreateUser(RegisterDTO userDto)
+        public async Task<ActionResult<Responses>> CreateUser([FromForm]RegisterDTO userDto)
         {
             var validate = await _registerValidator.ValidateAsync(userDto);
             if (!validate.IsValid)
@@ -82,7 +82,7 @@ namespace Airbnb.APIs.Controllers
             return Ok(await _userService.CreateUserAsync(userDto));
         }
         [HttpPut("UpdateUser")]
-        public async Task<ActionResult<Responses>> UpdateUser(string Id, [FromBody] UpdateUserDTO userDto)
+        public async Task<ActionResult<Responses>> UpdateUser([FromQuery]string Id, [FromForm] UpdateUserDTO userDto)
         {
             var validate = await _updateUserValidator.ValidateAsync(userDto);
             if (!validate.IsValid)

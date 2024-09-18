@@ -209,7 +209,7 @@ namespace Airbnb.Application.Services
 
             await _mailService.SendEmailAsync(user.Email, "Reset password!", otp);
 
-            return await Responses.SuccessResponse("Check your email!");
+            return await Responses.SuccessResponse(Token:await _userManager.GeneratePasswordResetTokenAsync(user),message:"Check your mail!");
         }
         public async Task<Responses> ResetPassword(ResetPasswordDTO resetPassword)
         {
@@ -219,16 +219,18 @@ namespace Airbnb.Application.Services
             {
                 return await Responses.FailurResponse("Email is not found!");
             }
+
             if(!_memoryCache.TryGetValue(user.Email, out string Otp))
             {
                 return await Responses.FailurResponse("Time expired.... try again!", HttpStatusCode.BadRequest);
             }
+
             if (Otp != resetPassword.Otp)
             {
                 return await Responses.FailurResponse("Invalid Otp!", HttpStatusCode.BadRequest);
             }
-            string token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var result = await _userManager.ResetPasswordAsync(user, token, resetPassword.NewPassword);
+
+            var result = await _userManager.ResetPasswordAsync(user, resetPassword.Token, resetPassword.NewPassword);
             if (!result.Succeeded)
             {
                 return await Responses.FailurResponse(result.Errors.ToList(), HttpStatusCode.InternalServerError);
