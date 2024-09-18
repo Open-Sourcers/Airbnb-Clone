@@ -1,5 +1,6 @@
 ﻿using Airbnb.APIs.Validators;
 using Airbnb.Application.MappingProfiler;
+using Airbnb.Application.Resolvers;
 using Airbnb.Application.Services;
 using Airbnb.Application.Settings;
 using Airbnb.Domain.Identity;
@@ -11,6 +12,7 @@ using AutoMapper;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Airbnb.APIs.Extensions
 {
@@ -20,7 +22,7 @@ namespace Airbnb.APIs.Extensions
         {
             Services.AddDbContext<AirbnbDbContext>(options =>
             {
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+                options.UseSqlServer(Configuration.GetConnectionString("RemoteConnection"));
                 options.UseLazyLoadingProxies();
             });
             // Identity Configurations
@@ -33,14 +35,14 @@ namespace Airbnb.APIs.Extensions
             .AddDefaultTokenProviders();
 
             // AutoMapper Configuration
-            var config = new MapperConfiguration(cfg =>
+            Services.AddAutoMapper(cfg =>
             {
                 cfg.AddProfile<MappingProfiles>();
-                // Configure AutoMapper to ignore proxy types and map base types
-                cfg.ShouldMapProperty = p => !p.GetMethod.IsVirtual || p.GetMethod.IsFinal;
-                cfg.ShouldUseConstructor = ci => !ci.DeclaringType.IsAbstract && !ci.DeclaringType.IsInterface;
-            });
-            Services.AddSingleton(config.CreateMapper());
+            }, typeof(MappingProfiles).Assembly);
+
+            // Services.AddSingleton(config.CreateMapper());
+            Services.AddMemoryCache();
+            Services.AddScoped<UserResolver>();
             Services.AddScoped<IPropertyService,PropertyService>();
             Services.AddScoped<IAuthService, AuthService>();
             Services.AddScoped<IUserService, UserService>();

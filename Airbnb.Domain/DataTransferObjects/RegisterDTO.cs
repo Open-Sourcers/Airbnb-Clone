@@ -8,12 +8,11 @@ using System.Threading.Tasks;
 
 namespace Airbnb.Domain.DataTransferObjects
 {
-    [Flags]
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum Role
     {
-        Customer = 0,    // Assign a unique bit value to each role
-        Owner = 1,
+        Customer,
+        Owner 
     }
     
     public class RegisterDTO

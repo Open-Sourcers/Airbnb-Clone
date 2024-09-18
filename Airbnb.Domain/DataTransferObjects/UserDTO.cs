@@ -18,8 +18,7 @@ namespace Airbnb.Domain.DataTransferObjects
         public IEnumerable<Booking> Bookings { get; set; }
         public IEnumerable<Property> Properties { get; set; }
         public IEnumerable<Review> Reviews { get; set; }
-
-        // profileImage": "Built Upload Image To User Image URL",
+        public string? profileImage { get; set; }
     
     }
 }

@@ -1,4 +1,6 @@
 ﻿using Airbnb.Application.Services;
+using Airbnb.Application.Settings;
+using Airbnb.Application.Utility;
 using Airbnb.Domain;
 using Airbnb.Domain.DataTransferObjects;
 using Airbnb.Domain.Identity;
@@ -57,7 +59,12 @@ namespace Airbnb.APIs.Controllers
                 return Ok(await Responses.FailurResponse("InValid User Id", HttpStatusCode.NotFound));
             }
             await _userManager.DeleteAsync(user);
-
+            if (user.ProfileImage != null)
+            {
+                var list = user.ProfileImage.Split('/');
+                string imageName = list[list.Length - 1];
+                await DocumentSettings.DeleteFile(SD.Image,SD.UserProfile,imageName);
+            }
             return Ok(await Responses.SuccessResponse("User Has Been Deleted Successfully."));
         }
 
@@ -69,7 +76,8 @@ namespace Airbnb.APIs.Controllers
             {
                 return await Responses.FailurResponse(validate.Errors);
             }
-            var user = _userManager.FindByEmailAsync(userDto.Email);
+
+            var user = await _userManager.FindByEmailAsync(userDto.Email);
             if (user is not null) return await Responses.FailurResponse("Email Is Already Exist!.");
             return Ok(await _userService.CreateUserAsync(userDto));
         }
