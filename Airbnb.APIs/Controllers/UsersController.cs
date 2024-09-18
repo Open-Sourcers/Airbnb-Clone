@@ -15,7 +15,7 @@ using System.Net;
 
 namespace Airbnb.APIs.Controllers
 {
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public class UsersController : APIBaseController
     {
         private readonly UserManager<AppUser> _userManager;
@@ -76,7 +76,8 @@ namespace Airbnb.APIs.Controllers
             {
                 return await Responses.FailurResponse(validate.Errors);
             }
-            var user = _userManager.FindByEmailAsync(userDto.Email);
+
+            var user = await _userManager.FindByEmailAsync(userDto.Email);
             if (user is not null) return await Responses.FailurResponse("Email Is Already Exist!.");
             return Ok(await _userService.CreateUserAsync(userDto));
         }

@@ -13,12 +13,18 @@ namespace Airbnb.APIs.Controllers
         private readonly IValidator<LoginDTO> _loginValidator;
         private readonly IValidator<RegisterDTO> _registerValidator;
         private readonly IValidator<ResetPasswordDTO> _resetPasswordValidator;
-        public AccountController(IUserService userService, IValidator<LoginDTO> loginValidator, IValidator<RegisterDTO> registerValidator, IValidator<ResetPasswordDTO> resetPasswordValidator)
+        private readonly IValidator<ForgetPasswordDto> _forgetPasswordValidator;
+        public AccountController(IUserService userService,
+            IValidator<LoginDTO> loginValidator,
+            IValidator<RegisterDTO> registerValidator,
+            IValidator<ResetPasswordDTO> resetPasswordValidator,
+            IValidator<ForgetPasswordDto> forgetPasswordValidator)
         {
             _userService = userService;
             _loginValidator = loginValidator;
             _registerValidator = registerValidator;
             _resetPasswordValidator = resetPasswordValidator;
+            _forgetPasswordValidator = forgetPasswordValidator;
         }
         [HttpPost("Login")]
         public async Task<ActionResult<Responses>> Login(LoginDTO userDto)
@@ -41,8 +47,8 @@ namespace Airbnb.APIs.Controllers
             return Ok(await _userService.Register(userDto));
         }
 
-        [Authorize]
-        [HttpPost("ResetPassword")]
+        
+        [HttpPut("ResetPassword")]
         public async Task<ActionResult<Responses>> ResetPassword(ResetPasswordDTO resetpasssword)
         {
             var validate = await _resetPasswordValidator.ValidateAsync(resetpasssword);
@@ -50,14 +56,21 @@ namespace Airbnb.APIs.Controllers
             {
                 return await Responses.FailurResponse(validate.Errors.ToString);
             }
-            var email = User.FindFirstValue(ClaimTypes.Email);
 
-            return Ok(await _userService.ResetPassword(resetpasssword, email));
+            return Ok(await _userService.ResetPassword(resetpasssword));
         }
         [HttpPost("EmailConfirmation")]
         public async Task<ActionResult<Responses>> EmailConfirmation(string? email, string? code)
         {
             return Ok(await _userService.EmailConfirmation(email, code));
+        }
+
+        [HttpGet("ForgetPassword")]
+        public async Task<ActionResult<Responses>> ForgetPassword([FromBody]ForgetPasswordDto forgetPassword)
+        {
+            var validation=await _forgetPasswordValidator.ValidateAsync(forgetPassword);
+            if(!validation.IsValid)return await Responses.FailurResponse(validation.Errors.ToString());
+            return Ok(await _userService.ForgetPassword(forgetPassword));
         }
     }
 }

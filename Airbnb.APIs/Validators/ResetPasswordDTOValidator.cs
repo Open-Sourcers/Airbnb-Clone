@@ -7,9 +7,8 @@ namespace Airbnb.APIs.Validators
     {
         public ResetPasswordDTOValidator()
         {
-            RuleFor(x => x.CurrentPassword)
-                .NotEmpty()
-                .MinimumLength(6);
+            RuleFor(x => x.Otp) .NotEmpty();
+            RuleFor(x => x.Email).NotEmpty().EmailAddress();  
 
             RuleFor(x => x.NewPassword)
                 .NotEmpty()
@@ -19,7 +18,7 @@ namespace Airbnb.APIs.Validators
                 .Matches("[0-9]")  
                 .Matches("[^a-zA-Z0-9]"); 
 
-            RuleFor(x => x.NewPasswordComfirmation)
+            RuleFor(x => x.PasswordComfirmation)
                 .NotEmpty()
                 .Equal(x => x.NewPassword);
         }
