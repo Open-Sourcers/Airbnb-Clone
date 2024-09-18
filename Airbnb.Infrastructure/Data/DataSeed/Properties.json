@@ -1,0 +1,22 @@
+[
+    {
+        "Id": "1",
+        "Name": "Cozy Beach House",
+        "Description": "A beautiful beach house with ocean views.",
+        "NightPrice": 300,
+        "Rate": 4.5,
+        "PlaceType": "House",
+        "LocationId": 1,
+        "OwnerId": "1"
+    },
+    {
+        "Id": "2",
+        "Name": "Modern Loft",
+        "Description": "A stylish loft with a city skyline view.",
+        "NightPrice": 200,
+        "Rate": 4.7,
+        "PlaceType": "Apartment",
+        "LocationId": 2,
+        "OwnerId": "2"
+    }
+] 

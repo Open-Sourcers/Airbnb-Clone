@@ -1,0 +1,14 @@
+[
+    {
+        "Comment": "Amazing place with great views!",
+        "Stars": 5,
+        "PropertyId": "1",
+        "UserId": "2"
+    },
+    {
+        "Comment": "Comfortable and well located.",
+        "Stars": 4,
+        "PropertyId": "2",
+        "UserId": "1"
+    }
+] 

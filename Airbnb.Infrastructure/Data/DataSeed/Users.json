@@ -1,0 +1,22 @@
+[
+    {
+        "Id": "1",
+        "FullName": "John Doe",
+        "UserName": "john.doe",
+        "Email": "john.doe@gmail.com",
+        "EmailConfirmed": true,
+        "Address": "123-Main-Street-NewYork-USA",
+        "ProfileImage": "Files/Image/UserProfile/1.jpg",
+        "PhoneNumber": "11234567890"
+    },
+    {
+        "Id": "2",
+        "FullName": "Jane Smith",
+        "UserName": "jane.smith",
+        "Email": "jane.smith@gmail.com",
+        "EmailConfirmed": true,
+        "Address": "456-Broadway-Avenue-SanFrancisco-USA",
+        "ProfileImage": "Files/Image/UserProfile/2.jpg",
+        "PhoneNumber": "09876543211"
+    }
+]  

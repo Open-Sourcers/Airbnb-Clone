@@ -1,0 +1,18 @@
+[
+    {
+        "Name": "USA",
+        "RegionId": 1
+    },
+    {
+        "Name": "Egypt",
+        "RegionId": 2
+    },
+    {
+        "Name": "Italy",
+        "RegionId": 3
+    },
+    {
+        "Name": "UAE",
+        "RegionId": 4
+    }
+]
