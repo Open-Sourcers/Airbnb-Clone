@@ -133,12 +133,14 @@ namespace Airbnb.Application.Services
         }
         public async Task<Responses> GetAllPropertiesAsync()
         {
+            // there is a cycle when return the object
             var properties = await _unitOfWork.Repository<Property, string>().GetAllAsync();
-            if (properties.Any()) return await Responses.FailurResponse("There is no properties found", System.Net.HttpStatusCode.NotFound);
+            if (!properties.Any()) return await Responses.FailurResponse("There is no properties found", System.Net.HttpStatusCode.NotFound);
             return await Responses.SuccessResponse(properties);
         }
         public async Task<Responses> GetPropertyByIdAsync(string propertyId)
         {
+            // there is a cycle when return the object
             var property = await _unitOfWork.Repository<Property, string>().GetByIdAsync(propertyId);
             if (property == null) return await Responses.FailurResponse("Property is not found!", System.Net.HttpStatusCode.NotFound);
             return await Responses.SuccessResponse(property);
