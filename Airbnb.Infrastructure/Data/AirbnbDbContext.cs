@@ -14,7 +14,7 @@ namespace Airbnb.Infrastructure.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            
+
             builder.Entity<Property>(P =>
             {
                 P.Property(p => p.Id).ValueGeneratedNever();
@@ -23,7 +23,7 @@ namespace Airbnb.Infrastructure.Data
                 P.HasMany(B => B.Bookings)
                .WithOne(P => P.Property)
                .HasForeignKey(P => P.PropertyId)
-               .OnDelete(DeleteBehavior.Restrict);
+               .OnDelete(DeleteBehavior.Cascade);
 
                 P.HasMany(i => i.Categories)
                 .WithMany(p => p.Properties);
@@ -47,7 +47,7 @@ namespace Airbnb.Infrastructure.Data
                 P.HasOne(O => O.Owner)
                 .WithMany(p => p.Properties)
                 .HasForeignKey(o => o.OwnerId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Cascade);
 
             });
 
@@ -66,7 +66,7 @@ namespace Airbnb.Infrastructure.Data
                 U.HasMany(p => p.Bookings)
                      .WithOne(u => u.User)
                      .HasForeignKey(f => f.UserId)
-                     .OnDelete(DeleteBehavior.Restrict);
+                     .OnDelete(DeleteBehavior.Cascade);
 
             });
 
@@ -83,7 +83,7 @@ namespace Airbnb.Infrastructure.Data
                             C.HasMany(l => l.Locations)
                             .WithOne(c => c.Country)
                             .HasForeignKey(c => c.CountryId)
-                            .OnDelete(DeleteBehavior.Restrict);
+                            .OnDelete(DeleteBehavior.Cascade);
                         });
 
             builder.Entity<Region>(L =>
@@ -91,14 +91,14 @@ namespace Airbnb.Infrastructure.Data
                 L.HasMany(C => C.Countries)
                 .WithOne(R => R.Region)
                 .HasForeignKey(R => R.RegionId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
             });
 
             builder.Entity<Category>(C =>
             {
                 C.HasMany(p => p.Properties)
                 .WithMany(c => c.Categories);
-                
+
             });
 
             base.OnModelCreating(builder);

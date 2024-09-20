@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Airbnb.Infrastructure.Migrations
 {
     [DbContext(typeof(AirbnbDbContext))]
-    [Migration("20240920160225_InitialCreating")]
-    partial class InitialCreating
+    [Migration("20240920211701_RefactorRelasions")]
+    partial class RefactorRelasions
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -493,13 +493,13 @@ namespace Airbnb.Infrastructure.Migrations
                     b.HasOne("Airbnb.Domain.Entities.Property", "Property")
                         .WithMany("Bookings")
                         .HasForeignKey("PropertyId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Airbnb.Domain.Identity.AppUser", "User")
                         .WithMany("Bookings")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Property");
@@ -512,7 +512,7 @@ namespace Airbnb.Infrastructure.Migrations
                     b.HasOne("Airbnb.Domain.Entities.Region", "Region")
                         .WithMany("Countries")
                         .HasForeignKey("RegionId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Region");
@@ -534,7 +534,7 @@ namespace Airbnb.Infrastructure.Migrations
                     b.HasOne("Airbnb.Domain.Entities.Country", "Country")
                         .WithMany("Locations")
                         .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Country");

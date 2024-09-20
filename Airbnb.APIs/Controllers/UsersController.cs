@@ -15,7 +15,7 @@ using System.Net;
 
 namespace Airbnb.APIs.Controllers
 {
-    [Authorize(Roles = "Admin")]
+   // [Authorize(Roles = "Admin")]
     public class UsersController : APIBaseController
     {
         private readonly UserManager<AppUser> _userManager;

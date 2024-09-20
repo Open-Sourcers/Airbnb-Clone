@@ -1,5 +1,4 @@
 ﻿using Airbnb.APIs.Validators;
-using Airbnb.Application.MappingProfiler;
 using Airbnb.Application.Resolvers;
 using Airbnb.Application.Services;
 using Airbnb.Application.Settings;
@@ -8,13 +7,9 @@ using Airbnb.Domain.Interfaces.Repositories;
 using Airbnb.Domain.Interfaces.Services;
 using Airbnb.Infrastructure.Data;
 using Airbnb.Infrastructure.Repositories;
-using AutoMapper;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
-using System.Reflection;
-
 namespace Airbnb.APIs.Extensions
 {
     public static class ApplicationServices
@@ -23,7 +18,7 @@ namespace Airbnb.APIs.Extensions
         {
             Services.AddDbContext<AirbnbDbContext>(options =>
             {
-                options.UseSqlServer(Configuration.GetConnectionString("RemoteConnection"));
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
                 options.UseLazyLoadingProxies();
             });
             // Identity Configurations
