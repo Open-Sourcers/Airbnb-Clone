@@ -8,8 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Airbnb.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Property = Airbnb.Domain.Entities.Property;
 
 namespace Airbnb.Domain.Identity
 {

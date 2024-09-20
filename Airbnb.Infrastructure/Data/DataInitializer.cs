@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 using Airbnb.Domain.Entities;
 using Airbnb.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
@@ -160,22 +155,21 @@ namespace Airbnb.Infrastructure.Data
                 await context.SaveChangesAsync();
             }
 
-            if (!context.PropertyCategories.Any())
-            {
-                string path = "../Airbnb.Infrastructure/Data/DataSeed/PropertiesCategories.json";
-                var PropertyCategoriesData = File.ReadAllText(path);
-                var propertyCategories = JsonSerializer.Deserialize<List<PropertyCategory>>(PropertyCategoriesData);
+            //if (!context.PropertyCategories.Any())
+            //{
+            //    string path = "../Airbnb.Infrastructure/Data/DataSeed/PropertiesCategories.json";
+            //    var PropertyCategoriesData = File.ReadAllText(path);
+            //    var propertyCategories = JsonSerializer.Deserialize<List<PropertyCategory>>(PropertyCategoriesData);
 
-                if (propertyCategories.Count() > 0)
-                {
-                    foreach (var propertyCategory in propertyCategories)
-                    {
-                        await context.Set<PropertyCategory>().AddAsync(propertyCategory);
-                    }
-                }
-
-                await context.SaveChangesAsync();
-            }
+            //    if (propertyCategories.Count() > 0)
+            //    {
+            //        foreach (var propertyCategory in propertyCategories)
+            //        {
+            //            await context.Set<PropertyCategory>().AddAsync(propertyCategory);
+            //        }
+            //    }
+            //    await context.SaveChangesAsync();
+            //}
 
             if (!context.Images.Any())
             {

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Airbnb.Infrastructure.Migrations
 {
     [DbContext(typeof(AirbnbDbContext))]
-    [Migration("20240913224429_InitialCreating")]
-    partial class InitialCreating
+    [Migration("20240920211701_RefactorRelasions")]
+    partial class RefactorRelasions
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -173,6 +173,7 @@ namespace Airbnb.Infrastructure.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("OwnerId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("PlaceType")
@@ -189,24 +190,6 @@ namespace Airbnb.Infrastructure.Migrations
                     b.HasIndex("OwnerId");
 
                     b.ToTable("Properties");
-                });
-
-            modelBuilder.Entity("Airbnb.Domain.Entities.PropertyCategory", b =>
-                {
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PropertyId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.HasKey("CategoryId", "PropertyId");
-
-                    b.HasIndex("PropertyId");
-
-                    b.ToTable("PropertyCategories");
                 });
 
             modelBuilder.Entity("Airbnb.Domain.Entities.Region", b =>
@@ -355,6 +338,21 @@ namespace Airbnb.Infrastructure.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("CategoryProperty", b =>
+                {
+                    b.Property<int>("CategoriesId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PropertiesId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("CategoriesId", "PropertiesId");
+
+                    b.HasIndex("PropertiesId");
+
+                    b.ToTable("CategoryProperty");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -547,35 +545,18 @@ namespace Airbnb.Infrastructure.Migrations
                     b.HasOne("Airbnb.Domain.Entities.Location", "Location")
                         .WithMany("Properties")
                         .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Airbnb.Domain.Identity.AppUser", "Owner")
                         .WithMany("Properties")
-                        .HasForeignKey("OwnerId");
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Location");
 
                     b.Navigation("Owner");
-                });
-
-            modelBuilder.Entity("Airbnb.Domain.Entities.PropertyCategory", b =>
-                {
-                    b.HasOne("Airbnb.Domain.Entities.Category", "Category")
-                        .WithMany("Properties")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Airbnb.Domain.Entities.Property", "Property")
-                        .WithMany("Categories")
-                        .HasForeignKey("PropertyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-
-                    b.Navigation("Property");
                 });
 
             modelBuilder.Entity("Airbnb.Domain.Entities.Review", b =>
@@ -589,7 +570,7 @@ namespace Airbnb.Infrastructure.Migrations
                     b.HasOne("Airbnb.Domain.Identity.AppUser", "User")
                         .WithMany("Reviews")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Property");
@@ -606,6 +587,21 @@ namespace Airbnb.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("property");
+                });
+
+            modelBuilder.Entity("CategoryProperty", b =>
+                {
+                    b.HasOne("Airbnb.Domain.Entities.Category", null)
+                        .WithMany()
+                        .HasForeignKey("CategoriesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Airbnb.Domain.Entities.Property", null)
+                        .WithMany()
+                        .HasForeignKey("PropertiesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -659,11 +655,6 @@ namespace Airbnb.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Airbnb.Domain.Entities.Category", b =>
-                {
-                    b.Navigation("Properties");
-                });
-
             modelBuilder.Entity("Airbnb.Domain.Entities.Country", b =>
                 {
                     b.Navigation("Locations");
@@ -677,8 +668,6 @@ namespace Airbnb.Infrastructure.Migrations
             modelBuilder.Entity("Airbnb.Domain.Entities.Property", b =>
                 {
                     b.Navigation("Bookings");
-
-                    b.Navigation("Categories");
 
                     b.Navigation("Images");
 

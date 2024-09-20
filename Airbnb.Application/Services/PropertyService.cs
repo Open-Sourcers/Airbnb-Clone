@@ -23,7 +23,7 @@ namespace Airbnb.Application.Services
             _unitOfWork = unitOfWork;
             _userManager = userManager;
         }
-        public async Task<Responses> CreatePropertyAsync(string? email,PropertyDTO propertyDTO)
+        public async Task<Responses> CreatePropertyAsync(string? email, PropertyDTO propertyDTO)
         {
             var owner = await _userManager.FindByEmailAsync(email);
 
@@ -59,7 +59,7 @@ namespace Airbnb.Application.Services
                     return await Responses.FailurResponse("Country is not valid data!", HttpStatusCode.InternalServerError);
                 }
             }
-           
+
             var location = await _unitOfWork.Repository<Location, int>().GetByIdAsync(propertyDTO.Location.Id);
             if (location == null)
             {
@@ -78,7 +78,7 @@ namespace Airbnb.Application.Services
             }
 
             var images = new List<Image>();
-            foreach(var i in propertyDTO.Images)
+            foreach (var i in propertyDTO.Images)
             {
                 // upload image and take his url to assign it for object of images and add it in images list 
             }
@@ -89,20 +89,20 @@ namespace Airbnb.Application.Services
                 // map every object from string to room service 
             }
             string PropertyId = Guid.NewGuid().ToString();
-            var categories = new List<PropertyCategory>();
-            foreach (var i in propertyDTO.Categories)
-            {
-                var category = await _unitOfWork.Repository<Category, int>().GetByIdAsync(i.Id);
-                if (categories == null)
-                {
-                    return await Responses.FailurResponse(i, HttpStatusCode.NotFound);
-                }
-                categories.Add(new PropertyCategory()
-                {
-                    CategoryId = i.Id,
-                    PropertyId = PropertyId
-                }) ;
-            }
+           // var categories = new List<PropertyCategory>();
+            //foreach (var i in propertyDTO.Categories)
+            //{
+            //    var category = await _unitOfWork.Repository<Category, int>().GetByIdAsync(i.Id);
+            //    if (categories == null)
+            //    {
+            //        return await Responses.FailurResponse(i, HttpStatusCode.NotFound);
+            //    }
+            //    categories.Add(new PropertyCategory()
+            //    {
+            //        CategoryId = i.Id,
+            //        PropertyId = PropertyId
+            //    });
+            //}
             var MappedProperty = new Property()
             {
                 Id = PropertyId,
@@ -113,13 +113,13 @@ namespace Airbnb.Application.Services
                 Location = location,
                 Owner = owner,
                 Images = images,
-                Categories=categories,
+               // Categories = categories,
                 RoomServices = roomServices
             };
             await _unitOfWork.Repository<Property, string>().AddAsync(MappedProperty);
             var Result = await _unitOfWork.CompleteAsync();
             if (Result <= 0) return await Responses.FailurResponse(System.Net.HttpStatusCode.BadRequest);
-            
+
             return await Responses.SuccessResponse("Property has been created successfuly!");
         }
         public async Task<Responses> DeletePropertyAsync(string propertyId)
