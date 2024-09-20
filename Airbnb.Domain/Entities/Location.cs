@@ -14,7 +14,6 @@ namespace Airbnb.Domain.Entities
 		public virtual Country Country { get; set; }
 		[ForeignKey("Country")]
 		public int CountryId { get; set; }
-
 		public virtual ICollection<Property> Properties { get; set; } = new HashSet<Property>();
 	}
 }

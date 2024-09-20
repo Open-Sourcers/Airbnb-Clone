@@ -26,7 +26,7 @@ namespace Airbnb.Domain.DataTransferObjects
         public string Email { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
-        public List<Role> roles { get; set; } = new List<Role>();
+        public IEnumerable<Role> roles { get; set; } = new List<Role>();
 
     }
 }
