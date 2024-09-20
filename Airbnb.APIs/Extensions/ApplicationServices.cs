@@ -22,7 +22,7 @@ namespace Airbnb.APIs.Extensions
         {
             Services.AddDbContext<AirbnbDbContext>(options =>
             {
-                options.UseSqlServer(Configuration.GetConnectionString("RemoteConnection"));
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
                 options.UseLazyLoadingProxies();
             });
             // Identity Configurations

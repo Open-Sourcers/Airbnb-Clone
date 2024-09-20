@@ -149,7 +149,7 @@ namespace Airbnb.Application.Services
         {
             var property = await _unitOfWork.Repository<Property, string>().GetByIdAsync(propertyId);
             if (property == null) return await Responses.FailurResponse("Property is not found!", System.Net.HttpStatusCode.NotFound);
-
+            // if the item is null shouldn't change anything.
             property.Name = propertyDTO.Name;
             property.Description = propertyDTO.Description;
             property.NightPrice = propertyDTO.NightPrice;
