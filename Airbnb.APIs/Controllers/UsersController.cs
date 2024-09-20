@@ -35,8 +35,10 @@ namespace Airbnb.APIs.Controllers
         [HttpGet("GetAllUsers")]
         public async Task<ActionResult<Responses>> GetAllUsers()
         {
+
             var AllUsers = await _userManager.Users.ToListAsync();
-            return Ok(await Responses.SuccessResponse(_mapper.Map<IEnumerable<UserDTO>>(AllUsers)));
+            return Ok(await Responses.SuccessResponse(_mapper.Map<List<AppUser>, List<UserDTO>>(AllUsers)));
+
         }
         [HttpGet("GetUserById/{Id}")]
         public async Task<ActionResult<Responses>> GetUserById([FromRoute] string Id)
@@ -50,7 +52,7 @@ namespace Airbnb.APIs.Controllers
         }
 
         [HttpDelete("RemoveUser/{Id}")]
-        public async Task<ActionResult<Responses>> RemoveUser([FromRoute]string Id)
+        public async Task<ActionResult<Responses>> RemoveUser([FromRoute] string Id)
         {
 
             var user = await _userManager.FindByIdAsync(Id);
@@ -63,13 +65,13 @@ namespace Airbnb.APIs.Controllers
             {
                 var list = user.ProfileImage.Split('/');
                 string imageName = list[list.Length - 1];
-                await DocumentSettings.DeleteFile(SD.Image,SD.UserProfile,imageName);
+                await DocumentSettings.DeleteFile(SD.Image, SD.UserProfile, imageName);
             }
             return Ok(await Responses.SuccessResponse("User Has Been Deleted Successfully."));
         }
 
         [HttpPost("CreateUser")]
-        public async Task<ActionResult<Responses>> CreateUser([FromForm]RegisterDTO userDto)
+        public async Task<ActionResult<Responses>> CreateUser([FromForm] RegisterDTO userDto)
         {
             var validate = await _registerValidator.ValidateAsync(userDto);
             if (!validate.IsValid)
@@ -82,7 +84,7 @@ namespace Airbnb.APIs.Controllers
             return Ok(await _userService.CreateUserAsync(userDto));
         }
         [HttpPut("UpdateUser")]
-        public async Task<ActionResult<Responses>> UpdateUser([FromQuery]string Id, [FromForm] UpdateUserDTO userDto)
+        public async Task<ActionResult<Responses>> UpdateUser([FromQuery] string Id, [FromForm] UpdateUserDTO userDto)
         {
             var validate = await _updateUserValidator.ValidateAsync(userDto);
             if (!validate.IsValid)

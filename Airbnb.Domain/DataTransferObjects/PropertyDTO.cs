@@ -20,8 +20,12 @@ namespace Airbnb.Domain.DataTransferObjects
         public RegionDto Region { get; set; }
         public CountryDto Country { get; set; }
         public OwnerDto Owner { get; set; }
-        public List<IFormFile> Images { get; set; }
-        public List<CategoryDto> Categories { get; set; } 
-        public List<string> RoomServices { get; set; }
+
+        public IEnumerable<ImageDto> Images { get; set; }
+        public IEnumerable<BookingDto> Bookings { get; set; }
+        public IEnumerable<ReviewDto> Reviews { get; set; }
+        public IEnumerable<CategoryDto> Categories { get; set; } 
+        public IEnumerable<RoomServicesDto> RoomServices { get; set; }
     }
+
 }

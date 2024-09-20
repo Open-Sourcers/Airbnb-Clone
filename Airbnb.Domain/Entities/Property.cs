@@ -16,15 +16,17 @@ namespace Airbnb.Domain.Entities
 		public float Rate { get; set; }
 		public string PlaceType { get; set; } = string.Empty;
 
-		public virtual Location Location { get; set; }
 		[ForeignKey("Location")]
 		public int LocationId { get; set; }
-		public virtual AppUser Owner { get; set; }
-		[ForeignKey("OwnerId")]
+		public virtual Location Location { get; set; }
+
+		[ForeignKey("Owner")]
 		public string OwnerId { get; set; }
+		public virtual AppUser Owner { get; set; }
+
 		public virtual ICollection<Image> Images { get; set; } = new HashSet<Image>();
 
-		public virtual ICollection<PropertyCategory> Categories { get; set; } = new HashSet<PropertyCategory>();
+		public virtual ICollection<Category> Categories { get; set; } = new HashSet<Category>();
 
 		public virtual ICollection<Review> Reviews { get; set; } = new HashSet<Review>();
 

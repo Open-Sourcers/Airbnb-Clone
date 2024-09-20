@@ -13,6 +13,7 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using System.Reflection;
 
 namespace Airbnb.APIs.Extensions
 {
@@ -35,12 +36,7 @@ namespace Airbnb.APIs.Extensions
             .AddDefaultTokenProviders();
 
             // AutoMapper Configuration
-            Services.AddAutoMapper(cfg =>
-            {
-                cfg.AddProfile<MappingProfiles>();
-            }, typeof(MappingProfiles).Assembly);
-
-            // Services.AddSingleton(config.CreateMapper());
+            Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies()); 
             Services.AddMemoryCache();
             Services.AddScoped<UserResolver>();
             Services.AddScoped<IPropertyService,PropertyService>();
