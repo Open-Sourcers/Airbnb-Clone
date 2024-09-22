@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Airbnb.Domain.DataTransferObjects
+namespace Airbnb.Domain.DataTransferObjects.Location
 {
-    public class ImageDto
+    public class LocationRequest:LocationDto
     {
-        public string Url { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Airbnb.Domain.DataTransferObjects;
+﻿using Airbnb.Domain.DataTransferObjects.User;
 using FluentValidation;
 
 namespace Airbnb.APIs.Validators

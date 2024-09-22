@@ -17,6 +17,7 @@ namespace Airbnb.Domain.Interfaces.Repositories
         Task<IReadOnlyList<TEntity>>? GetAllWithSpecAsync(ISpecifications<TEntity, TKey> spec);
         Task<TEntity>? GetEntityWithSpecAsync(ISpecifications<TEntity, TKey> spec);
         #endregion
+        Task<TEntity>? GetByNameAsync(string entity);
         Task AddAsync(TEntity entity);
         Task AddRangeAsync(IEnumerable<TEntity> entities);
         void UpdateRange(IEnumerable<TEntity> entities);

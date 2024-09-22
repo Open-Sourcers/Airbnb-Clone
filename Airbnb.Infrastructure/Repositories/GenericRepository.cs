@@ -62,5 +62,10 @@ namespace Airbnb.Infrastructure.Repositories
         {
             return SpecificationEvaluator<TEntity, TKey>.GetQuery(_context.Set<TEntity>(), Spec);
         }
+
+        public async Task<TEntity>? GetByNameAsync(string name)
+        {
+            return await _dbSet.FirstOrDefaultAsync(x => x.Name == name);
+        }
     }
 }

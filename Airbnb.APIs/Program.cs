@@ -9,15 +9,8 @@ namespace Airbnb.APIs
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            
             builder.Services.AddHttpContextAccessor();
-
-            builder.Services.AddControllers();
-            builder.Services.AddMvc()
-                 .AddNewtonsoftJson(options =>
-                 {
-                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                     options.SerializerSettings.Formatting = Formatting.Indented; // Optional for pretty JSON
-                 });
 
 
             builder.Services.AddEndpointsApiExplorer();

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Airbnb.Domain.DataTransferObjects
+namespace Airbnb.Domain.DataTransferObjects.Region
 {
-    public  class ForgetPasswordDto
+    public class RegionDto
     {
-        public string Email { get; set; }
+        public string Name { get; set; }
     }
 }

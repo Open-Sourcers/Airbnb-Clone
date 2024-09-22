@@ -1,36 +1,26 @@
 ﻿using System.Data;
-using Airbnb.Domain.DataTransferObjects;
+using Airbnb.Domain.DataTransferObjects.Property;
 using FluentValidation;
 
 namespace Airbnb.APIs.Validators
 {
-    public class PropertyDTOValidator : AbstractValidator<PropertyDTO>
+    public class PropertyDTOValidator : AbstractValidator<PropertyRequest>
     {
         public PropertyDTOValidator()
         {
-            RuleFor(p => p.Name)
-            .NotEmpty().WithMessage("Name is required.")
-            .MaximumLength(100).WithMessage("Name must not exceed 100 characters.");
+            RuleFor(x => x.Name).NotEmpty().Length(3, 50);
+            RuleFor(x => x.Description).NotEmpty().Length(5,500);
+            RuleFor(x => x.NightPrice).GreaterThan(0);
+            RuleFor(x => x.PlaceType).NotEmpty();
 
-            RuleFor(p => p.Description)
-                .NotEmpty().WithMessage("Description is required.")
-                .MaximumLength(500).WithMessage("Description must not exceed 500 characters.");
+            RuleForEach(x => x.RoomServices).NotEmpty();
+            RuleForEach(x => x.Categories).NotEmpty();
 
-            RuleFor(p => p.NightPrice)
-                .GreaterThan(0).WithMessage("NightPrice must be greater than zero.");
-
-            RuleFor(p => p.PlaceType)
-                .NotEmpty().WithMessage("PlaceType is required.")
-                .MaximumLength(50).WithMessage("PlaceType must not exceed 50 characters.");
-
-            RuleFor(p => p.Images)
-                .Must(images => images != null && images.Any()).WithMessage("At least one image is required.");
-
-            //RuleFor(p => p.Categories)
-            //    .Must(categories => categories != null && categories.Any()).WithMessage("At least one category is required.");
-
-            RuleFor(p => p.RoomServices)
-                .Must(roomServices => roomServices != null && roomServices.Any()).WithMessage("At least one room service is required.");
+            RuleFor(x => x.OwnereEmail).NotEmpty().EmailAddress();
+            RuleFor(x => x.Location).NotNull();
+            RuleFor(x => x.Region).NotNull();
+            RuleFor(x => x.Country).NotNull();
+            RuleForEach(x => x.Images).NotEmpty();
         }
     }
 }

@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Airbnb.Domain.DataTransferObjects
+namespace Airbnb.Domain.DataTransferObjects.Category
 {
-    public class RegionDto
+    public class CategoryRequest:CategoryDto
     {
         public int Id { get; set; }
-        public string Name { get; set; }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Airbnb.Domain;
-using Airbnb.Domain.DataTransferObjects;
 using Airbnb.Domain.Identity;
 using Airbnb.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Identity;
@@ -13,6 +12,10 @@ using Airbnb.Application.Utility;
 using Castle.Core.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Airbnb.Domain.Interfaces.Repositories;
+using Airbnb.Domain.Entities;
+using Airbnb.Infrastructure.Specifications;
+using Airbnb.Domain.DataTransferObjects.User;
 //using Microsoft.AspNetCore.Identity;
 
 
@@ -26,12 +29,14 @@ namespace Airbnb.Application.Services
         private readonly IMailService _mailService;
         private readonly IMemoryCache _memoryCache;
         private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
         public UserService(UserManager<AppUser> userManager,
                            SignInManager<AppUser> signInManager,
                            IAuthService authService,
                            IMailService mailService,
                            IMapper mapper,
-                           IMemoryCache memoryCache)
+                           IMemoryCache memoryCache,
+                           IUnitOfWork unitOfWork)
 
         {
             _userManager = userManager;
@@ -40,6 +45,7 @@ namespace Airbnb.Application.Services
             _mailService = mailService;
             _mapper = mapper;
             _memoryCache = memoryCache;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Responses> Login(LoginDTO userDto)
@@ -238,5 +244,18 @@ namespace Airbnb.Application.Services
             return await Responses.SuccessResponse(user.Id, "Password updated successfully.");
         }
 
+        public async Task<Responses> RemoveUser(AppUser user)
+        {
+            //await _userManager.DeleteAsync(user);
+            var spec = new BaseSpecifications<Property,string>(x=>x.OwnerId==user.Id);
+            var proprties = await _unitOfWork.Repository<Property, string>().GetAllWithSpecAsync(spec);
+            //if (user.ProfileImage != null)
+            //{
+            //    var list = user.ProfileImage.Split('/');
+            //    string imageName = list[list.Length - 1];
+            //    await DocumentSettings.DeleteFile(SD.Image, SD.UserProfile, imageName);
+            //}
+            return await Responses.SuccessResponse(proprties,"User Has Been Deleted Successfully.");
+        }
     }
 }

@@ -4,7 +4,6 @@ namespace Airbnb.Domain.Entities
 {
 	public class Country : BaseEntity<int>
 	{
-		public string Name { get; set; } = string.Empty;
 		public virtual Region Region { get; set; }
 		[ForeignKey("Region")]
 		public int RegionId { get; set; }

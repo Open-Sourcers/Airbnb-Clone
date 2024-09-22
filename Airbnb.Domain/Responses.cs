@@ -36,7 +36,7 @@ namespace Airbnb.Domain
                 Data = data,
             };
         }
-        public static async Task<Responses> SuccessResponse(object Token, string message)
+        public static async Task<Responses> SuccessResponse(object? Token, string message)
         {
             return new Responses
             {

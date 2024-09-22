@@ -1,7 +1,8 @@
 ﻿using System.Net;
 using System.Security.Claims;
+using Airbnb.Application.Utility;
 using Airbnb.Domain;
-using Airbnb.Domain.DataTransferObjects;
+using Airbnb.Domain.DataTransferObjects.Property;
 using Airbnb.Domain.Identity;
 using Airbnb.Domain.Interfaces.Services;
 using FluentValidation;
@@ -15,15 +16,17 @@ namespace Airbnb.APIs.Controllers
     {
         private readonly IPropertyService _propertyService;
         private readonly UserManager<AppUser> _userManager;
-        private readonly IValidator<PropertyDTO> _propertyValidator;
+        private readonly IValidator<PropertyRequest> _PropertyRequest;
 
-        public PropertyController(IPropertyService propertyService, UserManager<AppUser> userManager, IValidator<PropertyDTO> propertyValidator)
+        public PropertyController(IPropertyService propertyService, UserManager<AppUser> userManager, IValidator<PropertyRequest> propertyRequest)
+
         {
             _propertyService = propertyService;
             _userManager = userManager;
-            _propertyValidator = propertyValidator;
+            _PropertyRequest = propertyRequest;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("GetProperties")]
         public async Task<ActionResult<Responses>> GetAllProperties()
         {
@@ -31,42 +34,41 @@ namespace Airbnb.APIs.Controllers
             return Ok(properties);
         }
 
-        [HttpGet("GetProperty")]
-        public async Task<ActionResult<Responses>> GetPropertyById(string? propertyId)
+        [Authorize(Roles="Owner")]
+        [Authorize(Roles="Admin")]
+        [HttpGet("GetProperty/{propertyId}")]
+        public async Task<ActionResult<Responses>> GetPropertyById(string propertyId)
         {
-            if(propertyId is null) return await Responses.FailurResponse(System.Net.HttpStatusCode.BadRequest);
-            var property = await _propertyService.GetPropertyByIdAsync(propertyId);
-            return Ok(property);
-        }
-        //[Authorize(Roles = "Owner")]
-        [HttpPost("CreateProperty")]
-        public async Task<ActionResult<Responses>> CreateProperty(PropertyDTO propertyDTO)
-        {
-            var validate = await _propertyValidator.ValidateAsync(propertyDTO);
-            if (!validate.IsValid) return await Responses.FailurResponse(validate.Errors,HttpStatusCode.BadRequest);
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            //var user = await _userManager.FindByIdAsync(userId);
-            var email = User.FindFirstValue(ClaimTypes.Email);
-            if(email is null)
+            var user = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (user == null)
             {
-                return await Responses.FailurResponse("Owner is not found try again");
+                return await Responses.FailurResponse("UnAuthorized", HttpStatusCode.Unauthorized);
             }
-
-            return Ok(Responses.SuccessResponse(await _propertyService.CreatePropertyAsync(email,propertyDTO)));
+            return Ok(await _propertyService.GetPropertyByIdAsync(propertyId));
         }
 
-        [HttpDelete("DeleteProperty")]
-        public async Task<ActionResult<Responses>> DeleteProperty(string? propertyId)
+        [Authorize(Roles = "Owner")]
+        [Authorize(Roles = "Admin")]
+        [HttpPost("CreateProperty")]
+        public async Task<ActionResult<Responses>> CreateProperty(PropertyRequest propertyDTO)
         {
-            if(propertyId is null) return await Responses.FailurResponse(System.Net.HttpStatusCode.BadRequest);
+            var validate = await _PropertyRequest.ValidateAsync(propertyDTO);
+            if (!validate.IsValid) return await Responses.FailurResponse(validate.Errors, HttpStatusCode.BadRequest);
+
+            return Ok(Responses.SuccessResponse(await _propertyService.CreatePropertyAsync(propertyDTO)));
+        }
+
+        [HttpDelete("DeleteProperty/{propertyId}")]
+        public async Task<ActionResult<Responses>> DeleteProperty([FromRoute]string propertyId)
+        {
             return Ok(Responses.SuccessResponse(await _propertyService.DeletePropertyAsync(propertyId)));
         }
 
         [HttpPut("UpdateProperty")]
-        public async Task<ActionResult<Responses>> UpdateProperty(string? propertyId, PropertyDTO propertyDTO)
+        public async Task<ActionResult<Responses>> UpdateProperty(string? propertyId, PropertyRequest propertyDTO)
         {
-            var validate = await _propertyValidator.ValidateAsync(propertyDTO);
-            if(!validate.IsValid) return await Responses.FailurResponse(validate.Errors);
+            var validate = await _PropertyRequest.ValidateAsync(propertyDTO);
+            if (!validate.IsValid) return await Responses.FailurResponse(validate.Errors);
             if (propertyId is null) return await Responses.FailurResponse(System.Net.HttpStatusCode.BadRequest);
             return Ok(await _propertyService.UpdatePropertyAsync(propertyId, propertyDTO));
         }

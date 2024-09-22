@@ -1,4 +1,4 @@
-﻿using Airbnb.Domain.DataTransferObjects;
+﻿using Airbnb.Domain.DataTransferObjects.User;
 using Airbnb.Domain.Identity;
 
 
@@ -13,5 +13,6 @@ namespace Airbnb.Domain.Interfaces.Services
         Task<Responses> CreateUserAsync(RegisterDTO userDto);
         Task<Responses> EmailConfirmation(string? email, string? code);
         Task<Responses> ForgetPassword(ForgetPasswordDto forgetPassword);
+        Task<Responses> RemoveUser(AppUser user);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Airbnb.APIs.Validators;
+﻿using Airbnb.APIs.MiddelWairs;
+using Airbnb.APIs.Validators;
 using Airbnb.Application.Resolvers;
 using Airbnb.Application.Services;
 using Airbnb.Application.Settings;
@@ -10,6 +11,7 @@ using Airbnb.Infrastructure.Repositories;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 namespace Airbnb.APIs.Extensions
 {
     public static class ApplicationServices
@@ -18,9 +20,10 @@ namespace Airbnb.APIs.Extensions
         {
             Services.AddDbContext<AirbnbDbContext>(options =>
             {
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+                options.UseSqlServer(Configuration.GetConnectionString("RemoteConnection"));
                 options.UseLazyLoadingProxies();
             });
+
             // Identity Configurations
             Services.AddIdentity<AppUser, IdentityRole>(options =>
             {
@@ -30,15 +33,26 @@ namespace Airbnb.APIs.Extensions
             .AddEntityFrameworkStores<AirbnbDbContext>()
             .AddDefaultTokenProviders();
 
+            // HttpContext Accessor
+
+            Services.AddControllers();
+            Services.AddMvc()
+                 .AddNewtonsoftJson(options =>
+                 {
+                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                     options.SerializerSettings.Formatting = Formatting.Indented; 
+                 });
+
             // AutoMapper Configuration
-            Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies()); 
+            Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            Services.AddTransient<ExceptionMiddleWare>();
             Services.AddMemoryCache();
             Services.AddScoped<UserResolver>();
-            Services.AddScoped<IPropertyService,PropertyService>();
+            Services.AddScoped<IPropertyService, PropertyService>();
             Services.AddScoped<IAuthService, AuthService>();
             Services.AddScoped<IUserService, UserService>();
             Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            Services.AddHttpContextAccessor();
 
             Services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
             Services.AddTransient<IMailService, MailService>();
@@ -47,6 +61,7 @@ namespace Airbnb.APIs.Extensions
             {
                 fv.RegisterValidatorsFromAssembly(typeof(CreateAccountValidator).Assembly);
             });
+           
 
             return Services;
         }

@@ -2,7 +2,7 @@
 using Airbnb.Application.Settings;
 using Airbnb.Application.Utility;
 using Airbnb.Domain;
-using Airbnb.Domain.DataTransferObjects;
+using Airbnb.Domain.DataTransferObjects.User;
 using Airbnb.Domain.Identity;
 using Airbnb.Domain.Interfaces.Services;
 using AutoMapper;
@@ -15,7 +15,7 @@ using System.Net;
 
 namespace Airbnb.APIs.Controllers
 {
-   // [Authorize(Roles = "Admin")]
+    // [Authorize(Roles = "Admin")]
     public class UsersController : APIBaseController
     {
         private readonly UserManager<AppUser> _userManager;
@@ -60,14 +60,7 @@ namespace Airbnb.APIs.Controllers
             {
                 return Ok(await Responses.FailurResponse("InValid User Id", HttpStatusCode.NotFound));
             }
-            await _userManager.DeleteAsync(user);
-            if (user.ProfileImage != null)
-            {
-                var list = user.ProfileImage.Split('/');
-                string imageName = list[list.Length - 1];
-                await DocumentSettings.DeleteFile(SD.Image, SD.UserProfile, imageName);
-            }
-            return Ok(await Responses.SuccessResponse("User Has Been Deleted Successfully."));
+           return Ok(await _userService.RemoveUser(user));
         }
 
         [HttpPost("CreateUser")]

@@ -6,15 +6,15 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace Airbnb.Domain.DataTransferObjects
+namespace Airbnb.Domain.DataTransferObjects.User
 {
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum Role
     {
         Customer,
-        Owner 
+        Owner
     }
-    
+
     public class RegisterDTO
     {
         public string FirstName { get; set; }

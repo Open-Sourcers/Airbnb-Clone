@@ -1,5 +1,5 @@
 ﻿using Airbnb.Domain;
-using Airbnb.Domain.DataTransferObjects;
+using Airbnb.Domain.DataTransferObjects.User;
 using Airbnb.Domain.Interfaces.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;

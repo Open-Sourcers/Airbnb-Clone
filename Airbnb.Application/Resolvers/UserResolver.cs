@@ -1,4 +1,4 @@
-﻿using Airbnb.Domain.DataTransferObjects;
+﻿using Airbnb.Domain.DataTransferObjects.User;
 using Airbnb.Domain.Identity;
 using AutoMapper;
 using Microsoft.Extensions.Configuration;
