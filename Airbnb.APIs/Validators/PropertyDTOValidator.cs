@@ -8,11 +8,10 @@ namespace Airbnb.APIs.Validators
     {
         public PropertyDTOValidator()
         {
-            RuleFor(x => x.Name).NotEmpty().Length(3, 50);
-            RuleFor(x => x.Description).NotEmpty().Length(5,500);
+            RuleFor(x => x.Description).NotEmpty().Length(3, 500);
             RuleFor(x => x.NightPrice).GreaterThan(0);
-            RuleFor(x => x.PlaceType).NotEmpty();
-
+            RuleFor(x => x.PlaceType).NotNull();
+            RuleFor(x => x.OwnereEmail).NotNull().EmailAddress();
             RuleForEach(x => x.RoomServices).NotEmpty();
             RuleForEach(x => x.Categories).NotEmpty();
 
@@ -21,6 +20,7 @@ namespace Airbnb.APIs.Validators
             RuleFor(x => x.Region).NotNull();
             RuleFor(x => x.Country).NotNull();
             RuleForEach(x => x.Images).NotEmpty();
+            RuleForEach(x => x.Categories).NotEmpty();
         }
     }
 }

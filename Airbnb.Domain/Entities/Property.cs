@@ -10,7 +10,7 @@ namespace Airbnb.Domain.Entities
 {
 	public class Property : BaseEntity<string>
 	{
-		public string Description { get; set; } = string.Empty;
+		public string Description { get; set; }
 		public decimal NightPrice { get; set; }
 		public float Rate { get; set; }
 		public string PlaceType { get; set; } = string.Empty;

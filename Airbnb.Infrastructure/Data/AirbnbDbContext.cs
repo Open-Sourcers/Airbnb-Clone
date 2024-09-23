@@ -75,7 +75,7 @@ namespace Airbnb.Infrastructure.Data
                 L.HasMany(p => p.Properties)
                 .WithOne(l => l.Location)
                 .HasForeignKey(l => l.LocationId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
             });
 
             builder.Entity<Country>(C =>

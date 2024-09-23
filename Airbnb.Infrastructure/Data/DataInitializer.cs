@@ -137,6 +137,7 @@ namespace Airbnb.Infrastructure.Data
 
                 await context.SaveChangesAsync();
             }
+            //TODO: Solve Data Seeding Problem
 
             if (!context.Categories.Any())
             {
@@ -185,7 +186,7 @@ namespace Airbnb.Infrastructure.Data
                     }
                 }
 
-                await context.SaveChangesAsync();
+                var x=await context.SaveChangesAsync();
             }
 
 

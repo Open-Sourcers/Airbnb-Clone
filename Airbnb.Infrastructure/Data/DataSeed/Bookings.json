@@ -6,7 +6,9 @@
         "PaymentMethod": "Stripe",
         "PaymentDate": "2024-09-19T14:00:00",
         "PropertyId": "1",
-        "UserId": "2"
+        "UserId": "2",
+        "Name": "Secondry Stage"
+
     },
     {
         "TotalPrice": 400,
@@ -15,6 +17,7 @@
         "PaymentMethod": "Stripe",
         "PaymentDate": "2024-10-09T13:00:00",
         "PropertyId": "2",
-        "UserId": "1"
+        "UserId": "1",
+        "Name": "Five Stars"
     }
 ]

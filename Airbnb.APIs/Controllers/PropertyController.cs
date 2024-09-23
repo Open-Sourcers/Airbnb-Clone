@@ -34,8 +34,8 @@ namespace Airbnb.APIs.Controllers
             return Ok(properties);
         }
 
-        [Authorize(Roles="Owner")]
-        [Authorize(Roles="Admin")]
+        [Authorize(Roles = "Owner")]
+        [Authorize(Roles = "Admin")]
         [HttpGet("GetProperty/{propertyId}")]
         public async Task<ActionResult<Responses>> GetPropertyById(string propertyId)
         {
@@ -50,7 +50,7 @@ namespace Airbnb.APIs.Controllers
         [Authorize(Roles = "Owner")]
         [Authorize(Roles = "Admin")]
         [HttpPost("CreateProperty")]
-        public async Task<ActionResult<Responses>> CreateProperty(PropertyRequest propertyDTO)
+        public async Task<ActionResult<Responses>> CreateProperty([FromForm] PropertyRequest propertyDTO)
         {
             var validate = await _PropertyRequest.ValidateAsync(propertyDTO);
             if (!validate.IsValid) return await Responses.FailurResponse(validate.Errors, HttpStatusCode.BadRequest);
@@ -59,17 +59,19 @@ namespace Airbnb.APIs.Controllers
         }
 
         [HttpDelete("DeleteProperty/{propertyId}")]
-        public async Task<ActionResult<Responses>> DeleteProperty([FromRoute]string propertyId)
+        public async Task<ActionResult<Responses>> DeleteProperty([FromRoute] string propertyId)
         {
             return Ok(Responses.SuccessResponse(await _propertyService.DeletePropertyAsync(propertyId)));
         }
 
         [HttpPut("UpdateProperty")]
+        // TODO: un Completed Implementation for this method
+        // TODO: the is some Errors in Authorization
         public async Task<ActionResult<Responses>> UpdateProperty(string? propertyId, PropertyRequest propertyDTO)
         {
-            var validate = await _PropertyRequest.ValidateAsync(propertyDTO);
-            if (!validate.IsValid) return await Responses.FailurResponse(validate.Errors);
-            if (propertyId is null) return await Responses.FailurResponse(System.Net.HttpStatusCode.BadRequest);
+            //  var validate = await _PropertyRequest.ValidateAsync(propertyDTO);
+            // if (!validate.IsValid) return await Responses.FailurResponse(validate.Errors);
+            if (propertyId is null) return await Responses.FailurResponse(HttpStatusCode.BadRequest);
             return Ok(await _propertyService.UpdatePropertyAsync(propertyId, propertyDTO));
         }
 

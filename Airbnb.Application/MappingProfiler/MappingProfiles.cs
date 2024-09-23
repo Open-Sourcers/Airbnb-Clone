@@ -70,7 +70,7 @@ namespace Airbnb.Application.MappingProfiler
 
             CreateMap<Property, PropertyUserDto>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
-                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Name))
                 .ForMember(dest => dest.NightPrice, opt => opt.MapFrom(src => src.NightPrice))
                 .ForMember(dest => dest.Rate, opt => opt.MapFrom(src => src.Rate))
                 .ForMember(dest => dest.PlaceType, opt => opt.MapFrom(src => src.PlaceType));

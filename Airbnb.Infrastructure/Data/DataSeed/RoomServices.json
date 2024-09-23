@@ -1,10 +1,10 @@
 [
-    {
-        "Description": "Free WiFi",
-        "PropertyId": "1"
-    },
-    {
-        "Description": "24/7 Gym Access",
-        "PropertyId": "2"
-    }
-]  
+  {
+    "PropertyId": "1",
+    "Name": "Free WiFi"
+  },
+  {
+    "PropertyId": "2",
+    "Name": "24/7 Gym Access"
+  }
+]
