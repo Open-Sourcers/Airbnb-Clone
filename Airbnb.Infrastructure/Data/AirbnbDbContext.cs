@@ -1,4 +1,5 @@
-﻿using Airbnb.Domain.Entities;
+﻿using System.Reflection.Emit;
+using Airbnb.Domain.Entities;
 using Airbnb.Domain.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -25,8 +26,8 @@ namespace Airbnb.Infrastructure.Data
                .HasForeignKey(P => P.PropertyId)
                .OnDelete(DeleteBehavior.Cascade);
 
-                P.HasMany(i => i.Categories)
-                .WithMany(p => p.Properties);
+                //P.HasMany(i => i.Categories)
+                //.WithMany(p => p.Properties);
 
                 #endregion
                 P.HasMany(i => i.Images)
@@ -94,13 +95,19 @@ namespace Airbnb.Infrastructure.Data
                 .OnDelete(DeleteBehavior.Cascade);
             });
 
-            builder.Entity<Category>(C =>
+            //builder.Entity<Category>(C =>
+            //{
+            //    C.HasMany(p => p.Properties)
+            //    .WithMany(c => c.Categories);
+
+            //});
+
+            builder.Entity<PropertyCategory>(PC =>
             {
-                C.HasMany(p => p.Properties)
-                .WithMany(c => c.Categories);
-
+                PC.HasOne(PC => PC.Property)
+                  .WithMany(P => P.PropertyCategories)
+                  .HasForeignKey(PC => PC.PropertyId);
             });
-
             base.OnModelCreating(builder);
         }
         public DbSet<Booking> Bookings { get; set; }
@@ -109,6 +116,7 @@ namespace Airbnb.Infrastructure.Data
         public DbSet<Image> Images { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<Property> Properties { get; set; }
+        public DbSet<PropertyCategory> PropertyCategories { get; set; }
         public DbSet<Region> Regions { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<RoomService> roomServices { get; set; }
