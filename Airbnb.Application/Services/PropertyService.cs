@@ -18,10 +18,11 @@ namespace Airbnb.Application.Services
         private readonly IMapper _mapper;
         private readonly UserManager<AppUser> _userManager;
 
-        public PropertyService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager)
+        public PropertyService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
+            _mapper = mapper;
         }
         public async Task<Responses> CreatePropertyAsync(string? email, PropertyDTO propertyDTO)
         {
@@ -136,20 +137,22 @@ namespace Airbnb.Application.Services
             // there is a cycle when return the object
             var properties = await _unitOfWork.Repository<Property, string>().GetAllAsync();
             if (!properties.Any()) return await Responses.FailurResponse("There is no properties found", System.Net.HttpStatusCode.NotFound);
-            return await Responses.SuccessResponse(properties);
+            var MappedProperties = _mapper.Map<IEnumerable<Property>, IEnumerable< PropertyDTO>>(properties);
+            return await Responses.SuccessResponse(MappedProperties);
         }
         public async Task<Responses> GetPropertyByIdAsync(string propertyId)
         {
             // there is a cycle when return the object
             var property = await _unitOfWork.Repository<Property, string>().GetByIdAsync(propertyId);
             if (property == null) return await Responses.FailurResponse("Property is not found!", System.Net.HttpStatusCode.NotFound);
-            return await Responses.SuccessResponse(property);
+            var MappedProperty = _mapper.Map<Property, PropertyDTO>(property);
+            return await Responses.SuccessResponse(MappedProperty);
         }
         public async Task<Responses> UpdatePropertyAsync(string propertyId, PropertyDTO propertyDTO)
         {
             var property = await _unitOfWork.Repository<Property, string>().GetByIdAsync(propertyId);
             if (property == null) return await Responses.FailurResponse("Property is not found!", System.Net.HttpStatusCode.NotFound);
-
+            // if the item is null shouldn't change anything.
             property.Name = propertyDTO.Name;
             property.Description = propertyDTO.Description;
             property.NightPrice = propertyDTO.NightPrice;

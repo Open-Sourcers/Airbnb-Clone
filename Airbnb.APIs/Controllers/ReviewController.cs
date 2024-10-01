@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Airbnb.Domain;
+using Microsoft.AspNetCore.Identity;
+using Airbnb.Domain.Identity;
+using Airbnb.Domain.DataTransferObjects;
 
 namespace Airbnb.APIs.Controllers
 {
@@ -12,26 +15,15 @@ namespace Airbnb.APIs.Controllers
     public class ReviewController : ControllerBase
     {
         private readonly IReviewService _reviewService;
+        private readonly UserManager<AppUser> _userManager;
 
-        public ReviewController(IReviewService reviewService)
+        public ReviewController(IReviewService reviewService, UserManager<AppUser> userManager)
         {
             _reviewService = reviewService;
+            _userManager = userManager;
         }
 
-        // GET: api/Review
-        [HttpGet]
-        public async Task<IActionResult> GetAllReviews()
-        {
-            var reviews = await _reviewService.GetAllReviewsAsync();
-            if (reviews != null)
-            {
-                return Ok(await Responses.SuccessResponse(reviews, "Reviews retrieved successfully."));
-            }
-            return NotFound(await Responses.FailurResponse("No reviews found."));
-        }
-
-        // GET: api/Review/{id}
-        [HttpGet("{id}")]
+        [HttpGet("GetReview/{id}")]
         public async Task<IActionResult> GetReview(int id)
         {
             var review = await _reviewService.GetReviewAsync(id);
@@ -43,22 +35,23 @@ namespace Airbnb.APIs.Controllers
         }
 
         // POST: api/Review
-        [HttpPost]
-        public async Task<IActionResult> AddReview([FromBody] Review review)
+        [HttpPost("AddReview")]
+        public async Task<IActionResult> AddReview([FromBody] ReviewDTO review)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(await Responses.FailurResponse(ModelState));
             }
-
-            await _reviewService.AddReviewAsync(review);
-            return CreatedAtAction(nameof(GetReview), new { id = review.Id },
-                await Responses.SuccessResponse(review, "Review created successfully."));
+            var user = await _userManager.GetUserAsync(User);
+            if (user is null) return Ok(Responses.SuccessResponse("User not found"));
+            var userEmail = user.Email;
+            await _reviewService.AddReviewAsync(userEmail, review);
+            return Ok(Responses.SuccessResponse("Review added successfully"));
         }
 
         // PUT: api/Review/{id}
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateReview(int id, [FromBody] Review review)
+        [HttpPut("UpdateReview/{id}")]
+        public async Task<IActionResult> UpdateReview(int id, [FromBody] ReviewDTO review)
         {
             if (!ModelState.IsValid)
             {
@@ -72,12 +65,15 @@ namespace Airbnb.APIs.Controllers
             }
 
             // Replace with Update method if implemented
-            await _reviewService.AddReviewAsync(review);
+            var user = await _userManager.GetUserAsync(User);
+            if (user is null) return Ok(Responses.SuccessResponse("User not found"));
+            var userEmail = user.Email;
+            await _reviewService.UpdateReviewAsync(userEmail, id, review);
             return Ok(await Responses.SuccessResponse(review, "Review updated successfully."));
         }
 
         // DELETE: api/Review/{id}
-        [HttpDelete("{id}")]
+        [HttpDelete("DeleteReview/{id}")]
         public async Task<IActionResult> DeleteReview(int id)
         {
             var review = await _reviewService.GetReviewAsync(id);
@@ -87,7 +83,7 @@ namespace Airbnb.APIs.Controllers
             }
 
             await _reviewService.DeleteReviewAsync(id);
-            return Ok(await Responses.SuccessResponse(null, "Review deleted successfully."));
+            return Ok(await Responses.SuccessResponse("Review deleted successfully."));
         }
 
         // GET: api/Review/Property/{propertyId}
@@ -95,7 +91,7 @@ namespace Airbnb.APIs.Controllers
         public async Task<IActionResult> GetReviewsByProperty(string propertyId)
         {
             var reviews = await _reviewService.GetReviewsByPropertyIdAsync(propertyId);
-            if (reviews != null && reviews.Any())
+            if (reviews != null)
             {
                 return Ok(await Responses.SuccessResponse(reviews, $"Reviews for Property ID {propertyId} retrieved successfully."));
             }

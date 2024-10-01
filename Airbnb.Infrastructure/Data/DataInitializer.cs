@@ -155,21 +155,21 @@ namespace Airbnb.Infrastructure.Data
                 await context.SaveChangesAsync();
             }
 
-            //if (!context.PropertyCategories.Any())
-            //{
-            //    string path = "../Airbnb.Infrastructure/Data/DataSeed/PropertiesCategories.json";
-            //    var PropertyCategoriesData = File.ReadAllText(path);
-            //    var propertyCategories = JsonSerializer.Deserialize<List<PropertyCategory>>(PropertyCategoriesData);
+            if (!context.PropertyCategories.Any())
+            {
+                string path = "../Airbnb.Infrastructure/Data/DataSeed/PropertiesCategories.json";
+                var PropertyCategoriesData = File.ReadAllText(path);
+                var propertyCategories = JsonSerializer.Deserialize<List<PropertyCategory>>(PropertyCategoriesData);
 
-            //    if (propertyCategories.Count() > 0)
-            //    {
-            //        foreach (var propertyCategory in propertyCategories)
-            //        {
-            //            await context.Set<PropertyCategory>().AddAsync(propertyCategory);
-            //        }
-            //    }
-            //    await context.SaveChangesAsync();
-            //}
+                if (propertyCategories.Count() > 0)
+                {
+                    foreach (var propertyCategory in propertyCategories)
+                    {
+                        await context.Set<PropertyCategory>().AddAsync(propertyCategory);
+                    }
+                }
+                await context.SaveChangesAsync();
+            }
 
             if (!context.Images.Any())
             {
