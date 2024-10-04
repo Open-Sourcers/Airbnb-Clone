@@ -38,6 +38,7 @@ namespace Airbnb.APIs.Extensions
             Services.AddScoped<IAuthService, AuthService>();
             Services.AddScoped<IUserService, UserService>();
             Services.AddScoped<IReviewService, ReviewServices>();
+            Services.AddScoped<IBookService, BookService>();
             Services.AddScoped<IUnitOfWork, UnitOfWork>();
             Services.AddHttpContextAccessor();
 

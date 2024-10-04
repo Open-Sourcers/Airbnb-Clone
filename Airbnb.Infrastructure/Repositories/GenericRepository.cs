@@ -1,4 +1,5 @@
 ﻿using Airbnb.Domain;
+using Airbnb.Domain.Entities;
 using Airbnb.Domain.Interfaces.Interface;
 using Airbnb.Domain.Interfaces.Repositories;
 using Airbnb.Infrastructure.Data;
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -61,6 +63,15 @@ namespace Airbnb.Infrastructure.Repositories
         private IQueryable<TEntity> ApplySpecification(ISpecifications<TEntity, TKey> Spec)
         {
             return SpecificationEvaluator<TEntity, TKey>.GetQuery(_context.Set<TEntity>(), Spec);
+        }
+
+        public async Task<bool> CheckAvailabilityAsync(Expression<Func<Booking, bool>> expression, DateTimeOffset startDate, DateTimeOffset endDate)
+        {
+            return !await _context.Bookings
+            .Where(expression)
+            .AnyAsync(b =>
+              (b.EndDate <= endDate && b.EndDate >= startDate) ||
+              (b.StartDate <= endDate && b.StartDate >= startDate));
         }
     }
 }
