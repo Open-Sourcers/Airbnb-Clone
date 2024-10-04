@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Airbnb.Domain.Entities;
 using Airbnb.Domain.Interfaces.Interface;
 namespace Airbnb.Domain.Interfaces.Repositories
 {
@@ -21,7 +23,7 @@ namespace Airbnb.Domain.Interfaces.Repositories
         Task AddAsync(TEntity entity);
         Task AddRangeAsync(IEnumerable<TEntity> entities);
         void UpdateRange(IEnumerable<TEntity> entities);
- 
+        Task<bool> CheckAvailabilityAsync(Expression<Func<Booking, bool>> expression, DateTimeOffset startDate, DateTimeOffset endDate);
         void Update(TEntity entity);
         void Remove(TEntity entity);
     }

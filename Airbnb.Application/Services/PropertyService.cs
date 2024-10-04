@@ -129,7 +129,7 @@ namespace Airbnb.Application.Services
             if (property == null) return await Responses.FailurResponse("There is no property with this id");
             _unitOfWork.Repository<Property, string>().Remove(property);
             var Result = await _unitOfWork.CompleteAsync();
-            if (Result <= 0) return await Responses.FailurResponse("Error has been occured");
+            if (Result <= 0) return await Responses.FailurResponse("Error has been occured while removing");
             return await Responses.SuccessResponse("Property has been deleted successfully!");
         }
         public async Task<Responses> GetAllPropertiesAsync()
