@@ -24,7 +24,7 @@ namespace Airbnb.Application.Services
             _userManager = userManager;
             _mapper = mapper;
         }
-        public async Task<Responses> CreatePropertyAsync(string? email, PropertyDTO propertyDTO)
+        public async Task<Responses> CreatePropertyAsync(string? email, PropertyToCreateDTO propertyDTO)
         {
             var owner = await _userManager.FindByEmailAsync(email);
 
@@ -109,7 +109,7 @@ namespace Airbnb.Application.Services
                 Id = PropertyId,
                 Name = propertyDTO.Name,
                 Description = propertyDTO.Description,
-                NightPrice = propertyDTO.NightPrice,
+                NightPrice = propertyDTO.NightPrice.Value,
                 PlaceType = propertyDTO.PlaceType,
                 Location = location,
                 Owner = owner,
@@ -148,19 +148,25 @@ namespace Airbnb.Application.Services
             var MappedProperty = _mapper.Map<Property, PropertyDTO>(property);
             return await Responses.SuccessResponse(MappedProperty);
         }
-        public async Task<Responses> UpdatePropertyAsync(string propertyId, PropertyDTO propertyDTO)
+        public async Task<Responses> UpdatePropertyAsync(string propertyId, PropertyToUpdateDTO propertyDTO)
         {
             var property = await _unitOfWork.Repository<Property, string>().GetByIdAsync(propertyId);
             if (property == null) return await Responses.FailurResponse("Property is not found!", System.Net.HttpStatusCode.NotFound);
             // if the item is null shouldn't change anything.
+            if(propertyDTO.Name is not null)
             property.Name = propertyDTO.Name;
+            if (propertyDTO.Description is not null)
             property.Description = propertyDTO.Description;
+            if(propertyDTO.NightPrice > 0)
             property.NightPrice = propertyDTO.NightPrice;
+            if(propertyDTO.PlaceType is not null)
             property.PlaceType = propertyDTO.PlaceType;
-            //property.Location = propertyDTO.Location;
+            if(propertyDTO.Location is not null)
+            property.Location.Id = propertyDTO.Location.Id;
+            if(propertyDTO.Owner is not null)
             property.Owner = await _userManager.FindByEmailAsync(propertyDTO.Owner.Email);
             //property.Images = propertyDTO.Images;
-            //property.Categories = propertyDTO.Categories;
+            //property.PropertyCategories = propertyDTO.Categories;
 
             _unitOfWork.Repository<Property, string>().Update(property);
             var Result = await _unitOfWork.CompleteAsync();

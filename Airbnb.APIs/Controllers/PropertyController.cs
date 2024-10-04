@@ -16,12 +16,17 @@ namespace Airbnb.APIs.Controllers
         private readonly IPropertyService _propertyService;
         private readonly UserManager<AppUser> _userManager;
         private readonly IValidator<PropertyDTO> _propertyValidator;
+        private readonly IValidator<PropertyToCreateDTO> _propertyToCreateValidator;
 
-        public PropertyController(IPropertyService propertyService, UserManager<AppUser> userManager, IValidator<PropertyDTO> propertyValidator)
+        public PropertyController(IPropertyService propertyService, 
+                                  UserManager<AppUser> userManager, 
+                                  IValidator<PropertyDTO> propertyValidator,
+                                  IValidator<PropertyToCreateDTO> propertyToCreateValidator)
         {
             _propertyService = propertyService;
             _userManager = userManager;
             _propertyValidator = propertyValidator;
+            _propertyToCreateValidator = propertyToCreateValidator;
         }
 
         [HttpGet("GetProperties")]
@@ -40,9 +45,9 @@ namespace Airbnb.APIs.Controllers
         }
         //[Authorize(Roles = "Owner")]
         [HttpPost("CreateProperty")]
-        public async Task<ActionResult<Responses>> CreateProperty(PropertyDTO propertyDTO)
+        public async Task<ActionResult<Responses>> CreateProperty([FromQuery] PropertyToCreateDTO propertyDTO)
         {
-            var validate = await _propertyValidator.ValidateAsync(propertyDTO);
+            var validate = await _propertyToCreateValidator.ValidateAsync(propertyDTO);
             if (!validate.IsValid) return await Responses.FailurResponse(validate.Errors,HttpStatusCode.BadRequest);
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             //var user = await _userManager.FindByIdAsync(userId);
@@ -63,10 +68,11 @@ namespace Airbnb.APIs.Controllers
         }
 
         [HttpPut("UpdateProperty")]
-        public async Task<ActionResult<Responses>> UpdateProperty(string? propertyId, PropertyDTO propertyDTO)
+        public async Task<ActionResult<Responses>> UpdateProperty([FromQuery] string? propertyId, [FromQuery] PropertyToUpdateDTO propertyDTO)
         {
-            var validate = await _propertyValidator.ValidateAsync(propertyDTO);
-            if(!validate.IsValid) return await Responses.FailurResponse(validate.Errors);
+            ModelState.Clear();
+            //var validate = await _propertyToCreateValidator.ValidateAsync(propertyDTO);
+            //if(!validate.IsValid) return await Responses.FailurResponse(validate.Errors);
             if (propertyId is null) return await Responses.FailurResponse(System.Net.HttpStatusCode.BadRequest);
             return Ok(await _propertyService.UpdatePropertyAsync(propertyId, propertyDTO));
         }
