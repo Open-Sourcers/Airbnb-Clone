@@ -23,12 +23,14 @@ namespace Airbnb.Application.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<AppUser> _userManager;
         private readonly IMapper _mapper;
+        private readonly IPaymentService _paymentService;
 
-        public BookService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager, IMapper mapper)
+        public BookService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager, IMapper mapper, IPaymentService paymentService)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
             _mapper = mapper;
+            _paymentService = paymentService;
         }
 
         public async Task<Responses> CreateBookingByPropertyId(string email, BookingToCreateDTO bookDTO)
@@ -43,16 +45,19 @@ namespace Airbnb.Application.Services
             if (user is null) return await Responses.FailurResponse("please login to proccess!");
 
             var totalPrice = (bookDTO.EndDate.Day - bookDTO.StartDate.Day) * property.NightPrice;
-            var booking = new Booking
-            {
-                PropertyId = property.Id,
-                StartDate = bookDTO.StartDate,
-                EndDate = bookDTO.EndDate,
-                TotalPrice = totalPrice,
-                UserId = user.Id,
-                PaymentDate = DateTime.Now,
-                PaymentMethod = "Stripe"
-            };
+
+             //var intent = await _paymentService.CreatePaymentIntent(totalPrice, "usd", );
+
+             var booking = new Booking
+             {
+                 PropertyId = property.Id,
+                 StartDate = bookDTO.StartDate,
+                 EndDate = bookDTO.EndDate,
+                 TotalPrice = totalPrice,
+                 UserId = user.Id,
+                 PaymentDate = DateTime.Now,
+                 PaymentMethod = "card",
+             };
 
             await _unitOfWork.Repository<Booking, int>().AddAsync(booking);
             var Result = await _unitOfWork.CompleteAsync();

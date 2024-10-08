@@ -1,4 +1,5 @@
 ﻿using Airbnb.APIs.Validators;
+using Airbnb.Application.Models;
 using Airbnb.Application.Resolvers;
 using Airbnb.Application.Services;
 using Airbnb.Application.Settings;
@@ -10,6 +11,7 @@ using Airbnb.Infrastructure.Repositories;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
 namespace Airbnb.APIs.Extensions
 {
     public static class ApplicationServices
@@ -41,6 +43,13 @@ namespace Airbnb.APIs.Extensions
             Services.AddScoped<IBookService, BookService>();
             Services.AddScoped<IUnitOfWork, UnitOfWork>();
             Services.AddHttpContextAccessor();
+
+            #region Payment configuration
+            Services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
+            StripeConfiguration.ApiKey = Configuration["StripeKeys:SecretKey"];
+
+            Services.AddScoped<IPaymentService, PaymentService>();
+            #endregion
 
             Services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
             Services.AddTransient<IMailService, MailService>();
