@@ -86,7 +86,9 @@ namespace Airbnb.Application.MappingProfiler
                 .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.PropertyCategories))
                 .ForMember(dest => dest.Reviews, opt => opt.MapFrom(src => src.Reviews))
                 .ForMember(dest => dest.Bookings, opt => opt.MapFrom(src => src.Bookings))
-                .ForMember(dest => dest.RoomServices, opt => opt.MapFrom(src => src.RoomServices));
+                .ForMember(dest => dest.RoomServices, opt => opt.MapFrom(src => src.RoomServices))
+                .ForMember(dest => dest.Country, opt => opt.MapFrom(src => src.Location.Country))
+                .ForMember(dest => dest.Region, opt => opt.MapFrom(src => src.Location.Country.Region));
 
             CreateMap<RegisterDTO, AppUser>()
             .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => $"{src.FirstName} {src.MiddlName} {src.LastName}".Trim()))
