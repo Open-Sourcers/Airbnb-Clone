@@ -174,6 +174,5 @@ namespace Airbnb.Application.Services
             return await Responses.SuccessResponse("Property has been updated successfully!");
         }
 
-
     }
 }

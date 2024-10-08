@@ -70,7 +70,6 @@ namespace Airbnb.APIs.Controllers
         [HttpPut("UpdateProperty")]
         public async Task<ActionResult<Responses>> UpdateProperty([FromQuery] string? propertyId, [FromQuery] PropertyToUpdateDTO propertyDTO)
         {
-            ModelState.Clear();
             //var validate = await _propertyToCreateValidator.ValidateAsync(propertyDTO);
             //if(!validate.IsValid) return await Responses.FailurResponse(validate.Errors);
             if (propertyId is null) return await Responses.FailurResponse(System.Net.HttpStatusCode.BadRequest);

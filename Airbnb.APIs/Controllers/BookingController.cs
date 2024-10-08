@@ -48,7 +48,7 @@ namespace Airbnb.APIs.Controllers
             var Response = await _paymentService.PaymentCancelAsync(bookingId);
             return Ok(Response);
         }
-
+         
          [HttpDelete("DeleteBooking")]
         public async Task<ActionResult<Responses>> DeleteBooking([FromQuery] int bookingId)
         {
