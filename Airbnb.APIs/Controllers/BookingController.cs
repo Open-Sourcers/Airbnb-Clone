@@ -15,11 +15,15 @@ namespace Airbnb.APIs.Controllers
     {
         private readonly IBookService _bookService;
         private readonly IValidator<BookingToCreateDTO> _bookingToCreateValidator;
+        private readonly IPaymentService _paymentService;
 
-        public BookingController(IBookService bookService, IValidator<BookingToCreateDTO> bookingToCreateValidator)
+        public BookingController(IBookService bookService, 
+                                 IValidator<BookingToCreateDTO> bookingToCreateValidator,
+                                 IPaymentService paymentService)
         {
             _bookService = bookService;
             _bookingToCreateValidator = bookingToCreateValidator;
+            _paymentService = paymentService;
         }
         //[Authorize]
         [HttpPost("CreateBooking")]
@@ -32,16 +36,24 @@ namespace Airbnb.APIs.Controllers
             var email = User.FindFirstValue(ClaimTypes.Email);
             if (email is null)
             {
-                return await Responses.FailurResponse("Owner is not found try again");
+                return await Responses.FailurResponse("email is not found try again");
             }
 
             return Ok(await _bookService.CreateBookingByPropertyId(email, bookDTO));
         }
 
-        [HttpDelete("CancelBooking")]
+        [HttpPut("CancelBooking")]
         public async Task<ActionResult<Responses>> CancelBooking([FromQuery] int bookingId)
         {
-            return Ok(await _bookService.DeleteBookingById(bookingId));
+            var Response = await _paymentService.PaymentCancelAsync(bookingId);
+            return Ok(Response);
+        }
+
+         [HttpDelete("DeleteBooking")]
+        public async Task<ActionResult<Responses>> DeleteBooking([FromQuery] int bookingId)
+        {
+            var Response = await _bookService.DeleteBookingById(bookingId);
+            return Ok(Response);
         }
 
 
