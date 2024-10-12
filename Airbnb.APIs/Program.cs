@@ -1,10 +1,6 @@
 using Airbnb.APIs.Extensions;
 using Airbnb.APIs.Utility;
-using Airbnb.Application.Services;
-using Airbnb.Domain.Interfaces.Repositories;
-using Airbnb.Infrastructure.Data;
-using Airbnb.Infrastructure.Repositories;
-using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace Airbnb.APIs
 {
@@ -16,9 +12,16 @@ namespace Airbnb.APIs
             builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddControllers();
+            builder.Services.AddMvc()
+                 .AddNewtonsoftJson(options =>
+                 {
+                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                     options.SerializerSettings.Formatting = Formatting.Indented; // Optional for pretty JSON
+                 });
+
 
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerConfigurations();
 
             await builder.Services.JWTConfigurations(builder.Configuration);
             builder.Services.AddApplicationServices(builder.Configuration);
@@ -28,12 +31,12 @@ namespace Airbnb.APIs
             await ExtensionMethods.ApplyMigrations(app);
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+            //if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
+            app.UseStaticFiles();
             app.UseHttpsRedirection();
 
             app.UseAuthentication();

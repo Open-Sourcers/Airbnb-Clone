@@ -14,12 +14,12 @@ namespace Airbnb.Domain.Entities
 		public string Comment { get; set; } = string.Empty;
 		public int Stars { get; set; }
 
-		public virtual Property Property { get; set; }
 		[ForeignKey("Property")]
-		public int PropertyId { get; set; }
+		public string PropertyId { get; set; }
+		public virtual Property Property { get; set; }
 
-        public virtual AppUser User { get; set; }
         [ForeignKey("User")]
         public string UserId { get; set; }
+        public virtual AppUser User { get; set; }
     }
 }

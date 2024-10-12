@@ -12,8 +12,9 @@ namespace Airbnb.Domain.DataTransferObjects
     public enum Role
     {
         Customer,
-        Owner
+        Owner 
     }
+    
     public class RegisterDTO
     {
         public string FirstName { get; set; }
@@ -23,8 +24,9 @@ namespace Airbnb.Domain.DataTransferObjects
         public string PhoneNumber { get; set; }
         public IFormFile? Image { get; set; }
         public string Email { get; set; }
+        public string UserName { get; set; }
         public string Password { get; set; }
-        public Role role { get; set; }
+        public IEnumerable<Role> roles { get; set; } = new List<Role>();
 
     }
 }

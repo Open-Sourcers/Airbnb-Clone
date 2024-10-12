@@ -8,7 +8,7 @@ using Airbnb.Domain.Identity;
 
 namespace Airbnb.Domain.Entities
 {
-	public class Property : BaseEntity<int>
+	public class Property : BaseEntity<string>
 	{
 		public string Name { get; set; } = string.Empty;
 		public string Description { get; set; } = string.Empty;
@@ -16,16 +16,19 @@ namespace Airbnb.Domain.Entities
 		public float Rate { get; set; }
 		public string PlaceType { get; set; } = string.Empty;
 
-		public virtual Location Location { get; set; }
 		[ForeignKey("Location")]
 		public int LocationId { get; set; }
+		public virtual Location Location { get; set; }
+
+		[ForeignKey("Owner")]
+		public string OwnerId { get; set; }
 		public virtual AppUser Owner { get; set; }
+
 		public virtual ICollection<Image> Images { get; set; } = new HashSet<Image>();
 
-		public virtual ICollection<PropertyCategory> Categories { get; set; } = new HashSet<PropertyCategory>();
+        public virtual ICollection<PropertyCategory> PropertyCategories { get; set; } = new HashSet<PropertyCategory>();
 
-		public virtual ICollection<Review> Reviews { get; set; }=new HashSet<Review>();
-
+        public virtual ICollection<Review> Reviews { get; set; } = new HashSet<Review>();
 
         public virtual ICollection<RoomService> RoomServices { get; set; } = new List<RoomService>();
 

@@ -22,9 +22,18 @@ namespace Airbnb.Domain
         {
             return new Responses
             {
-                StatusCode=HttpStatusCode.OK,
+                StatusCode = HttpStatusCode.OK,
                 IsSuccess = true,
                 Message = Message,
+            };
+        }
+        public static async Task<Responses> SuccessResponse(object? data)
+        {
+            return new Responses
+            {
+                StatusCode = HttpStatusCode.OK,
+                IsSuccess = true,
+                Data = data,
             };
         }
         public static async Task<Responses> SuccessResponse(object Token, string message)

@@ -39,15 +39,22 @@ namespace Airbnb.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("PaymentDate")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("PaymentIntentId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PaymentMethod")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PropertyId")
-                        .HasColumnType("int");
+                    b.Property<string>("PropertyId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTimeOffset>("StartDate")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("decimal(18,2)");
@@ -112,8 +119,9 @@ namespace Airbnb.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("PropertyId")
-                        .HasColumnType("int");
+                    b.Property<string>("PropertyId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Url")
                         .IsRequired()
@@ -150,11 +158,8 @@ namespace Airbnb.Infrastructure.Migrations
 
             modelBuilder.Entity("Airbnb.Domain.Entities.Property", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -171,6 +176,7 @@ namespace Airbnb.Infrastructure.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("OwnerId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("PlaceType")
@@ -191,13 +197,22 @@ namespace Airbnb.Infrastructure.Migrations
 
             modelBuilder.Entity("Airbnb.Domain.Entities.PropertyCategory", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<int>("PropertyId")
-                        .HasColumnType("int");
+                    b.Property<string>("PropertyId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("CategoryId", "PropertyId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
 
                     b.HasIndex("PropertyId");
 
@@ -233,8 +248,9 @@ namespace Airbnb.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PropertyId")
-                        .HasColumnType("int");
+                    b.Property<string>("PropertyId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Stars")
                         .HasColumnType("int");
@@ -264,8 +280,9 @@ namespace Airbnb.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PropertyId")
-                        .HasColumnType("int");
+                    b.Property<string>("PropertyId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -325,7 +342,6 @@ namespace Airbnb.Infrastructure.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("ProfileImage")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
@@ -541,12 +557,14 @@ namespace Airbnb.Infrastructure.Migrations
                     b.HasOne("Airbnb.Domain.Entities.Location", "Location")
                         .WithMany("Properties")
                         .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Airbnb.Domain.Identity.AppUser", "Owner")
                         .WithMany("Properties")
-                        .HasForeignKey("OwnerId");
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Location");
 
@@ -556,13 +574,13 @@ namespace Airbnb.Infrastructure.Migrations
             modelBuilder.Entity("Airbnb.Domain.Entities.PropertyCategory", b =>
                 {
                     b.HasOne("Airbnb.Domain.Entities.Category", "Category")
-                        .WithMany("Properties")
+                        .WithMany("PropertyCategories")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Airbnb.Domain.Entities.Property", "Property")
-                        .WithMany("Categories")
+                        .WithMany("PropertyCategories")
                         .HasForeignKey("PropertyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -583,7 +601,7 @@ namespace Airbnb.Infrastructure.Migrations
                     b.HasOne("Airbnb.Domain.Identity.AppUser", "User")
                         .WithMany("Reviews")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Property");
@@ -655,7 +673,7 @@ namespace Airbnb.Infrastructure.Migrations
 
             modelBuilder.Entity("Airbnb.Domain.Entities.Category", b =>
                 {
-                    b.Navigation("Properties");
+                    b.Navigation("PropertyCategories");
                 });
 
             modelBuilder.Entity("Airbnb.Domain.Entities.Country", b =>
@@ -672,9 +690,9 @@ namespace Airbnb.Infrastructure.Migrations
                 {
                     b.Navigation("Bookings");
 
-                    b.Navigation("Categories");
-
                     b.Navigation("Images");
+
+                    b.Navigation("PropertyCategories");
 
                     b.Navigation("Reviews");
 
