@@ -1,9 +1,12 @@
 ﻿using System.Net;
 using System.Security.Claims;
+using Airbnb.Application.Services.Caching;
 using Airbnb.Domain;
 using Airbnb.Domain.DataTransferObjects;
+using Airbnb.Domain.Entities;
 using Airbnb.Domain.Identity;
 using Airbnb.Domain.Interfaces.Services;
+using Azure;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -17,23 +20,33 @@ namespace Airbnb.APIs.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly IValidator<PropertyDTO> _propertyValidator;
         private readonly IValidator<PropertyToCreateDTO> _propertyToCreateValidator;
+        private readonly IRedisCacheService _redisCache;
 
         public PropertyController(IPropertyService propertyService, 
                                   UserManager<AppUser> userManager, 
                                   IValidator<PropertyDTO> propertyValidator,
-                                  IValidator<PropertyToCreateDTO> propertyToCreateValidator)
+                                  IValidator<PropertyToCreateDTO> propertyToCreateValidator,
+                                  IRedisCacheService redisCache)
         {
             _propertyService = propertyService;
             _userManager = userManager;
             _propertyValidator = propertyValidator;
             _propertyToCreateValidator = propertyToCreateValidator;
+            _redisCache = redisCache;
         }
 
         [HttpGet("GetProperties")]
         public async Task<ActionResult<Responses>> GetAllProperties()
         {
-            var properties = await _propertyService.GetAllPropertiesAsync();
-            return Ok(properties);
+            var properties = await _redisCache.GetDataAsync<IEnumerable<PropertyDTO>>("properties");
+            if(properties is not null)
+            {
+                var Result = Responses.SuccessResponse(properties);
+                return Ok(Result);
+            }
+            var Response = await _propertyService.GetAllPropertiesAsync();
+            await _redisCache.SetDataAsync("properties", Response.Data);
+            return Ok(Response);
         }
 
         [HttpGet("GetProperty")]
@@ -45,7 +58,7 @@ namespace Airbnb.APIs.Controllers
         }
         //[Authorize(Roles = "Owner")]
         [HttpPost("CreateProperty")]
-        public async Task<ActionResult<Responses>> CreateProperty([FromQuery] PropertyToCreateDTO propertyDTO)
+        public async Task<ActionResult<Responses>> CreateProperty([FromForm] PropertyToCreateDTO propertyDTO)
         {
             var validate = await _propertyToCreateValidator.ValidateAsync(propertyDTO);
             if (!validate.IsValid) return await Responses.FailurResponse(validate.Errors,HttpStatusCode.BadRequest);

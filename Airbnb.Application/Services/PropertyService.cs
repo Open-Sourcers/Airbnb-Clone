@@ -1,4 +1,6 @@
-﻿using Airbnb.Domain;
+﻿using Airbnb.Application.Settings;
+using Airbnb.Application.Utility;
+using Airbnb.Domain;
 using Airbnb.Domain.DataTransferObjects;
 using Airbnb.Domain.Entities;
 using Airbnb.Domain.Identity;
@@ -7,6 +9,7 @@ using Airbnb.Domain.Interfaces.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Configuration;
 using System.Net;
 using Property = Airbnb.Domain.Entities.Property;
 
@@ -16,13 +19,15 @@ namespace Airbnb.Application.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IConfiguration _configuration;
         private readonly UserManager<AppUser> _userManager;
 
-        public PropertyService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager, IMapper mapper)
+        public PropertyService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager, IMapper mapper, IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
             _mapper = mapper;
+            _configuration = configuration;
         }
         public async Task<Responses> CreatePropertyAsync(string? email, PropertyToCreateDTO propertyDTO)
         {
@@ -78,19 +83,35 @@ namespace Airbnb.Application.Services
                 }
             }
 
+            string PropertyId = Guid.NewGuid().ToString();
             var images = new List<Image>();
-            foreach (var i in propertyDTO.Images)
+            foreach (var img in propertyDTO.Images)
             {
-                // upload image and take his url to assign it for object of images and add it in images list 
+                // upload image and take his url to assign it for object of images and add it in images list
+                var ImgName = await DocumentSettings.UploadFile(img, SD.Image, "Property");
+                var url = _configuration["BaseUrl"] + $"{ImgName}";
+                var newImage = new Image()
+                {
+                    PropertyId = PropertyId,
+                    Url = url
+                };
+                images.Add(newImage);
             }
 
-            var roomServices = new List<RoomService>();
-            foreach (var i in propertyDTO.Images)
+            var roomServices = new List<RoomServicesToCreateDTO>();
+            foreach (var item in propertyDTO.RoomServices)
             {
                 // map every object from string to room service 
+                var RS = new RoomServicesToCreateDTO()
+                {
+                    PropertyId = PropertyId,
+                    Description = item.Description,
+                };
+
+                roomServices.Add(RS);
             }
-            string PropertyId = Guid.NewGuid().ToString();
-           // var categories = new List<PropertyCategory>();
+
+            // var categories = new List<PropertyCategory>();
             //foreach (var i in propertyDTO.Categories)
             //{
             //    var category = await _unitOfWork.Repository<Category, int>().GetByIdAsync(i.Id);
@@ -104,6 +125,7 @@ namespace Airbnb.Application.Services
             //        PropertyId = PropertyId
             //    });
             //}
+            var MappedRoomServices = _mapper.Map<ICollection<RoomServicesToCreateDTO>, ICollection<RoomService>>(roomServices);
             var MappedProperty = new Property()
             {
                 Id = PropertyId,
@@ -113,14 +135,16 @@ namespace Airbnb.Application.Services
                 PlaceType = propertyDTO.PlaceType,
                 Location = location,
                 Owner = owner,
-                Images = images,
-               // Categories = categories,
-                RoomServices = roomServices
+                //Images = images,
+                // Categories = categories,
+                //RoomServices = MappedRoomServices
             };
             await _unitOfWork.Repository<Property, string>().AddAsync(MappedProperty);
             var Result = await _unitOfWork.CompleteAsync();
             if (Result <= 0) return await Responses.FailurResponse(System.Net.HttpStatusCode.BadRequest);
 
+            await _unitOfWork.Repository<Image, int>().AddRangeAsync(images);
+            await _unitOfWork.CompleteAsync();
             return await Responses.SuccessResponse("Property has been created successfuly!");
         }
         public async Task<Responses> DeletePropertyAsync(string propertyId)
@@ -135,9 +159,19 @@ namespace Airbnb.Application.Services
         public async Task<Responses> GetAllPropertiesAsync()
         {
             // there is a cycle when return the object
-            var properties = await _unitOfWork.Repository<Property, string>().GetAllAsync();
+            var properties = (await _unitOfWork.Repository<Property, string>().GetAllAsync()).ToList();
             if (!properties.Any()) return await Responses.FailurResponse("There is no properties found", System.Net.HttpStatusCode.NotFound);
-            var MappedProperties = _mapper.Map<IEnumerable<Property>, IEnumerable< PropertyDTO>>(properties);
+            var MappedProperties = _mapper.Map<List<Property>, List< PropertyDTO>>(properties);
+
+            for(int i = 0; i < properties.Count(); i++)
+            {
+                var ImgUrls = new List<string>();
+                foreach(var img in properties[i].Images)
+                {
+                    ImgUrls.Add(img.Url);
+                }
+                MappedProperties[i].ImageUrls = ImgUrls;
+            }
             return await Responses.SuccessResponse(MappedProperties);
         }
         public async Task<Responses> GetPropertyByIdAsync(string propertyId)
@@ -146,6 +180,12 @@ namespace Airbnb.Application.Services
             var property = await _unitOfWork.Repository<Property, string>().GetByIdAsync(propertyId);
             if (property == null) return await Responses.FailurResponse("Property is not found!", System.Net.HttpStatusCode.NotFound);
             var MappedProperty = _mapper.Map<Property, PropertyDTO>(property);
+            var imagesUrl = new List<string>();
+            foreach(var img in property.Images)
+            {
+                imagesUrl.Add(img.Url);
+            }
+            MappedProperty.ImageUrls = imagesUrl;
             return await Responses.SuccessResponse(MappedProperty);
         }
         public async Task<Responses> UpdatePropertyAsync(string propertyId, PropertyToUpdateDTO propertyDTO)

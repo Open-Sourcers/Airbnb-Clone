@@ -23,7 +23,7 @@ namespace Airbnb.APIs.Validators
                 .NotEmpty().WithMessage("PlaceType is required.")
                 .MaximumLength(50).WithMessage("PlaceType must not exceed 50 characters.");
 
-            RuleFor(p => p.Images)
+            RuleFor(p => p.ImageUrls)
                 .Must(images => images != null && images.Any()).WithMessage("At least one image is required.");
 
             //RuleFor(p => p.Categories)

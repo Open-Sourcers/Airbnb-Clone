@@ -82,7 +82,6 @@ namespace Airbnb.Application.MappingProfiler
                 .ForMember(dest => dest.PlaceType, opt => opt.MapFrom(src => src.PlaceType))
                 .ForMember(dest => dest.Location, opt => opt.MapFrom(src => src.Location))
                 .ForMember(dest => dest.Owner, opt => opt.MapFrom(src => src.Owner))
-                .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Images))
                 .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.PropertyCategories))
                 .ForMember(dest => dest.Reviews, opt => opt.MapFrom(src => src.Reviews))
                 .ForMember(dest => dest.Bookings, opt => opt.MapFrom(src => src.Bookings))
@@ -94,6 +93,9 @@ namespace Airbnb.Application.MappingProfiler
             .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => $"{src.FirstName} {src.MiddlName} {src.LastName}".Trim()))
             .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.Password));
 
-          }
+            CreateMap<RoomServicesToCreateDTO, RoomService>()
+            .ForMember(dest => dest.PropertyId, opt => opt.MapFrom(src => src.PropertyId))
+            .ForMember(dest => dest.Decscription, opt => opt.MapFrom(src => src.Description));
+        }
     }
 }

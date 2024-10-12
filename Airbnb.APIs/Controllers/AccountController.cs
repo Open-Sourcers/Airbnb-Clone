@@ -26,6 +26,7 @@ namespace Airbnb.APIs.Controllers
             _resetPasswordValidator = resetPasswordValidator;
             _forgetPasswordValidator = forgetPasswordValidator;
         }
+
         [HttpPost("Login")]
         public async Task<ActionResult<Responses>> Login(LoginDTO userDto)
         {
@@ -36,6 +37,7 @@ namespace Airbnb.APIs.Controllers
             }
             return Ok(await _userService.Login(userDto));
         }
+
         [HttpPost("Register")]
         public async Task<ActionResult<Responses>> Register(RegisterDTO userDto)
         {
