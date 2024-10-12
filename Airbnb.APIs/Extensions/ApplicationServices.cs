@@ -2,6 +2,7 @@
 using Airbnb.Application.Models;
 using Airbnb.Application.Resolvers;
 using Airbnb.Application.Services;
+using Airbnb.Application.Services.Caching;
 using Airbnb.Application.Settings;
 using Airbnb.Domain.Identity;
 using Airbnb.Domain.Interfaces.Repositories;
@@ -11,6 +12,7 @@ using Airbnb.Infrastructure.Repositories;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 using Stripe;
 namespace Airbnb.APIs.Extensions
 {
@@ -20,8 +22,15 @@ namespace Airbnb.APIs.Extensions
         {
             Services.AddDbContext<AirbnbDbContext>(options =>
             {
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+                options.UseSqlServer(Configuration.GetConnectionString("RemoteConnection"));
                 options.UseLazyLoadingProxies();
+            });
+
+
+            Services.AddSingleton<IConnectionMultiplexer>(Options =>
+            {
+                var Connection = Configuration.GetConnectionString("RedisRemote");
+                return ConnectionMultiplexer.Connect(Connection);
             });
             // Identity Configurations
             Services.AddIdentity<AppUser, IdentityRole>(options =>
@@ -42,6 +51,7 @@ namespace Airbnb.APIs.Extensions
             Services.AddScoped<IReviewService, ReviewServices>();
             Services.AddScoped<IBookService, BookService>();
             Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            Services.AddScoped<IRedisCacheService, RedisCacheService>();
             Services.AddHttpContextAccessor();
 
             #region Payment configuration

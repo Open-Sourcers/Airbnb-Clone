@@ -14,7 +14,9 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.10" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="StackExchange.Redis" Version="2.8.16" />
     <PackageReference Include="Stripe.net" Version="46.1.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
@@ -27,8 +29,8 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\Files\Image\Property\" />
+    <Folder Include="wwwroot\Files\Image\Property\" />
     <Folder Include="wwwroot\Files\Image\UserProfile\" />
-    <Folder Include="wwwroot\Files\" />
   </ItemGroup>
 
 </Project>
