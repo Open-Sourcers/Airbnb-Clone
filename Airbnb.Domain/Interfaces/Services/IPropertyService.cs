@@ -13,7 +13,7 @@ namespace Airbnb.Domain.Interfaces.Services
         Task<Responses> GetAllPropertiesAsync();
         Task<Responses> GetPropertyByIdAsync(string propertyId);
         Task<Responses> CreatePropertyAsync(PropertyRequest propertyDTO);
-        Task<Responses> UpdatePropertyAsync(string propertyId, PropertyRequest propertyDTO);
+        Task<Responses> UpdatePropertyAsync(UpdatePropertyDto propertyDTO);
         Task<Responses> DeletePropertyAsync(string propertyId);
 
     }

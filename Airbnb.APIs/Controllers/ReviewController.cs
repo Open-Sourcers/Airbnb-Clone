@@ -4,102 +4,85 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Airbnb.Domain;
+using Airbnb.Infrastructure.Specifications;
+using Airbnb.Domain.Interfaces.Repositories;
+using AutoMapper;
+using Airbnb.Domain.DataTransferObjects;
+using FluentValidation;
+using Airbnb.APIs.Validators;
+using System.Net;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
+using Airbnb.Domain.Identity;
 
 namespace Airbnb.APIs.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ReviewController : ControllerBase
+
+    public class ReviewController : APIBaseController
     {
         private readonly IReviewService _reviewService;
+        private readonly IValidator<ReviewDto> _validator;
+        private readonly UserManager<AppUser> _userManager;
+        public ReviewController(IReviewService reviewService,
+            IValidator<ReviewDto> validator
+,
+            UserManager<AppUser> userManager)
 
-        public ReviewController(IReviewService reviewService)
         {
             _reviewService = reviewService;
+            _validator = validator;
+            _userManager = userManager;
         }
 
-        // GET: api/Review
-        [HttpGet]
-        public async Task<IActionResult> GetAllReviews()
+        [HttpGet("GetAllReviews")]
+        public async Task<ActionResult<Responses>> GetAllReviews(string? propertyId, string? userId)
         {
-            var reviews = await _reviewService.GetAllReviewsAsync();
-            if (reviews != null)
-            {
-                return Ok(await Responses.SuccessResponse(reviews, "Reviews retrieved successfully."));
-            }
-            return NotFound(await Responses.FailurResponse("No reviews found."));
+            return Ok(await _reviewService.GetAllReviewsAsync(propertyId, userId));
         }
 
-        // GET: api/Review/{id}
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetReview(int id)
+
+        [HttpGet("GetReviewDetails")]
+        public async Task<ActionResult<Responses>> GetReview(int id)
         {
-            var review = await _reviewService.GetReviewAsync(id);
-            if (review != null)
-            {
-                return Ok(await Responses.SuccessResponse(review, "Review retrieved successfully."));
-            }
-            return NotFound(await Responses.FailurResponse($"Review with ID {id} not found."));
+            return Ok(await _reviewService.GetReviewAsync(id));
         }
 
-        // POST: api/Review
-        [HttpPost]
-        public async Task<IActionResult> AddReview([FromBody] Review review)
+        [HttpPost("CreateReview")]
+        public async Task<ActionResult<Responses>> AddReview([FromBody] ReviewDto review)
         {
-            if (!ModelState.IsValid)
+            var Email = User.FindFirstValue(ClaimTypes.Email);
+            var user = await _userManager.FindByEmailAsync(Email);
+            var validation = await _validator.ValidateAsync(review);
+            if (!validation.IsValid || user.Id!= review.UserId)
             {
                 return BadRequest(await Responses.FailurResponse(ModelState));
             }
+            return Ok(await _reviewService.AddReviewAsync(review));
 
-            await _reviewService.AddReviewAsync(review);
-            return CreatedAtAction(nameof(GetReview), new { id = review.Id },
-                await Responses.SuccessResponse(review, "Review created successfully."));
         }
 
-        // PUT: api/Review/{id}
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateReview(int id, [FromBody] Review review)
+        [HttpPut("UpdateReview/{id}")]
+        public async Task<ActionResult<Responses>> UpdateReview(int id, [FromBody] ReviewDto review)
         {
-            if (!ModelState.IsValid)
+            var Email = User.FindFirstValue(ClaimTypes.Email);
+            var user = await _userManager.FindByEmailAsync(Email);
+            var validation = await _validator.ValidateAsync(review);
+            if (review.UserId != user.Id)
             {
-                return BadRequest(await Responses.FailurResponse(ModelState));
+                return await Responses.FailurResponse("UnAuthenticated user!", HttpStatusCode.Unauthorized);
             }
-
-            var existingReview = await _reviewService.GetReviewAsync(id);
-            if (existingReview == null)
+            if (!validation.IsValid)
             {
-                return NotFound(await Responses.FailurResponse($"Review with ID {id} not found."));
+                return await Responses.FailurResponse(validation.Errors,HttpStatusCode.BadRequest);
             }
-
-            // Replace with Update method if implemented
-            await _reviewService.AddReviewAsync(review);
-            return Ok(await Responses.SuccessResponse(review, "Review updated successfully."));
+            return Ok(await _reviewService.UpdateReviewAsync(user.Id,id,review));
         }
 
-        // DELETE: api/Review/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteReview(int id)
+        public async Task<ActionResult<Responses>> DeleteReview(int id)
         {
-            var review = await _reviewService.GetReviewAsync(id);
-            if (review == null)
-            {
-                return NotFound(await Responses.FailurResponse($"Review with ID {id} not found."));
-            }
-
-            await _reviewService.DeleteReviewAsync(id);
-            return Ok(await Responses.SuccessResponse(null, "Review deleted successfully."));
+            return Ok(await _reviewService.DeleteReviewAsync(id));
         }
 
-        // GET: api/Review/Property/{propertyId}
-        [HttpGet("Property/{propertyId}")]
-        public async Task<IActionResult> GetReviewsByProperty(string propertyId)
-        {
-            var reviews = await _reviewService.GetReviewsByPropertyIdAsync(propertyId);
-            if (reviews != null && reviews.Any())
-            {
-                return Ok(await Responses.SuccessResponse(reviews, $"Reviews for Property ID {propertyId} retrieved successfully."));
-            }
-            return NotFound(await Responses.FailurResponse($"No reviews found for Property ID {propertyId}."));
-        }
     }
 }

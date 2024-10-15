@@ -33,6 +33,9 @@ namespace Airbnb.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTimeOffset>("BookingDate")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<DateTimeOffset>("EndDate")
                         .HasColumnType("datetimeoffset");
 
@@ -43,7 +46,15 @@ namespace Airbnb.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("PaymentDate")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("PaymentIntentId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentStatus")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -55,7 +66,7 @@ namespace Airbnb.Infrastructure.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18,4)");
 
                     b.Property<string>("UserId")
                         .IsRequired()

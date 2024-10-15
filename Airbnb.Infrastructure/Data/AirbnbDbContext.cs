@@ -2,6 +2,9 @@
 using Airbnb.Domain.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
+using System.Security.AccessControl;
+using System.Security.Claims;
 
 namespace Airbnb.Infrastructure.Data
 {
@@ -9,9 +12,7 @@ namespace Airbnb.Infrastructure.Data
     {
         public AirbnbDbContext(DbContextOptions<AirbnbDbContext> options) : base(options)
         {
-
         }
-
         protected override void OnModelCreating(ModelBuilder builder)
         {
 
@@ -100,6 +101,13 @@ namespace Airbnb.Infrastructure.Data
                 .WithMany(c => c.Categories);
 
             });
+
+            builder.Entity<Booking>(B =>
+            {
+                B.Property(b => b.TotalPrice)
+                .HasColumnType("decimal(18,4)");
+            });
+
 
             base.OnModelCreating(builder);
         }

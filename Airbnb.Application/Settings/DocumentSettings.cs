@@ -27,8 +27,9 @@ namespace Airbnb.Application.Settings
             return subFilePath;
         }
         // Delete File
-        public static async Task DeleteFile(string fileCategory,string folderName,string fileName)
+        public static async Task DeleteFile(string fileCategory,string folderName,string? fileName)
         {
+            if (fileName == null) return;
             string current = Directory.GetCurrentDirectory();
             string filePath = Path.Combine(current,SD.wwwroot,SD.Files, fileCategory, folderName, fileName);
             if(File.Exists(filePath))

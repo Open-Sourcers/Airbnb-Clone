@@ -14,4 +14,5 @@ namespace Airbnb.Application.Utility
         public const string Files = "Files";
         public const string wwwroot = "wwwroot";
     }
+
 }

@@ -34,7 +34,7 @@ namespace Airbnb.Application.Services
         }
         public async Task<Responses> CreatePropertyAsync(PropertyRequest propertyDTO)
         {
-            var owner = await GetCurrentUserAsync();
+            var owner = await GetUser.GetCurrentUserAsync(_contextAccessor,_userManager);
             var user = await _userManager.FindByEmailAsync(propertyDTO.OwnereEmail);
             if (owner == null || user == null || user.Email != owner.Email)
             {
@@ -144,7 +144,7 @@ namespace Airbnb.Application.Services
         }
         public async Task<Responses> DeletePropertyAsync(string propertyId)
         {
-            var user = await GetCurrentUserAsync();
+            var user = await GetUser.GetCurrentUserAsync(_contextAccessor, _userManager);
             if (user == null)
             {
                 return await Responses.FailurResponse("Unauthenticated request!", HttpStatusCode.Unauthorized);
@@ -190,7 +190,7 @@ namespace Airbnb.Application.Services
         }
         public async Task<Responses> GetPropertyByIdAsync(string propertyId)
         {
-            var user = await GetCurrentUserAsync();
+            var user = await GetUser.GetCurrentUserAsync(_contextAccessor, _userManager);
             if (user == null)
             {
                 return await Responses.FailurResponse("Unauthenticated request!", HttpStatusCode.Unauthorized);
@@ -207,15 +207,15 @@ namespace Airbnb.Application.Services
 
             return await Responses.SuccessResponse(_mapper.Map<PropertyResponse>(property));
         }
-        public async Task<Responses> UpdatePropertyAsync(string propertyId, PropertyRequest propertyDTO)
+        public async Task<Responses> UpdatePropertyAsync(UpdatePropertyDto propertyDTO)
         {
-            var user = await GetCurrentUserAsync();
+            var user = await GetUser.GetCurrentUserAsync(_contextAccessor, _userManager);
             if (user == null)
             {
                 return await Responses.FailurResponse("Unauthenticated request!", HttpStatusCode.Unauthorized);
             }
 
-            var property = await _unitOfWork.Repository<Property, string>().GetByIdAsync(propertyId);
+            var property = await _unitOfWork.Repository<Property, string>().GetByIdAsync(propertyDTO.PropertyId);
 
             if (property == null) return await Responses.FailurResponse("Property is not found!", HttpStatusCode.NotFound);
 
@@ -223,38 +223,11 @@ namespace Airbnb.Application.Services
             {
                 return await Responses.FailurResponse("Unauthenticated request!", HttpStatusCode.Unauthorized);
             }
-            var images = property.Images;
-            if (propertyDTO.Images != null)
-            {
-                foreach (var i in propertyDTO.Images)
-                {
-                    images.Add(new Image()
-                    {
-                        Name = await DocumentSettings.UploadFile(i, SD.Image, SD.Property)
-                    });
-
-                }
-            }
-
-            var categories = new List<Category>();
-            if (propertyDTO.Categories != null)
-            {
-                foreach (var i in propertyDTO.Categories)
-                {
-                    categories.Add(new Category()
-                    {
-                        Name = i
-                    });
-                }
-            }
-
             try
             {
 
                 property.Name = propertyDTO.Name != null ? propertyDTO.Name : property.Name;
                 property.Description = propertyDTO.Description != null ? propertyDTO.Description : property.Description;
-                property.Images = images;
-                property.Categories = categories != null ? categories : property.Categories;
                 property.NightPrice =propertyDTO.NightPrice != null ? (decimal)propertyDTO.NightPrice : property.NightPrice;
                 property.PlaceType = propertyDTO.PlaceType != null ? propertyDTO.PlaceType : property.PlaceType;
                 property.RoomServices = propertyDTO.RoomServices != null ?
@@ -268,6 +241,7 @@ namespace Airbnb.Application.Services
 
                 _unitOfWork.Repository<Property, string>().Update(property);
                 await _unitOfWork.CompleteAsync();
+                return await Responses.SuccessResponse("Property has been updated successfully!");
             }
             catch (Exception ex)
             {
@@ -275,28 +249,29 @@ namespace Airbnb.Application.Services
                 return await Responses.FailurResponse(ex.Message.ToList(), HttpStatusCode.InternalServerError);
             }
 
-            return await Responses.SuccessResponse("Property has been updated successfully!");
         }
 
-        public async Task<AppUser>? GetCurrentUserAsync()
-        {
-            var userClaims = _contextAccessor.HttpContext?.User;
+        #region GetUser
+        //public async Task<AppUser>? GetCurrentUserAsync()
+        //{
+        //    var userClaims = _contextAccessor.HttpContext?.User;
 
-            if (userClaims == null || !userClaims.Identity.IsAuthenticated)
-            {
-                return null;
-            }
+        //    if (userClaims == null || !userClaims.Identity.IsAuthenticated)
+        //    {
+        //        return null;
+        //    }
 
-            var userEmail = userClaims.FindFirstValue(ClaimTypes.Email);
+        //    var userEmail = userClaims.FindFirstValue(ClaimTypes.Email);
 
-            if (string.IsNullOrEmpty(userEmail))
-            {
-                return null;
-            }
+        //    if (string.IsNullOrEmpty(userEmail))
+        //    {
+        //        return null;
+        //    }
 
-            return await _userManager.FindByEmailAsync(userEmail);
+        //    return await _userManager.FindByEmailAsync(userEmail);
 
-        }
+        //} 
+        #endregion
 
     }
 }

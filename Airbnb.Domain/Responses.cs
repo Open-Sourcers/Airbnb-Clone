@@ -104,6 +104,7 @@ namespace Airbnb.Domain
                 Data = Errors
             };
         }
+       
         #endregion
     }
 }

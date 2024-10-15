@@ -53,7 +53,7 @@ namespace Airbnb.Application.Services
             var user = await _userManager.FindByEmailAsync(userDto.Email);
             if (user == null)
             {
-                return await Responses.FailurResponse("Your Email Is Not Found!.", HttpStatusCode.BadRequest);
+                return await Responses.FailurResponse("Your email is not found!.", HttpStatusCode.BadRequest);
             }
             else
             {
@@ -75,7 +75,7 @@ namespace Airbnb.Application.Services
         public async Task<Responses> Register(RegisterDTO user)
         {
             var isFound = await _userManager.FindByEmailAsync(user.Email);
-            if (isFound is not null) return await Responses.FailurResponse("User Is Already Exist!.", HttpStatusCode.InternalServerError);
+            if (isFound is not null) return await Responses.FailurResponse("User Is Already Exist!.", HttpStatusCode.BadRequest);
 
             var account = new AppUser()
             {
@@ -103,11 +103,20 @@ namespace Airbnb.Application.Services
             {
 
                 var roles = user.roles.Select(role => role.ToString()).ToList();
-                var addToRolesResult = await _userManager.AddToRolesAsync(account, roles);
-                if (!addToRolesResult.Succeeded)
+                if (roles.Count() == 0)
                 {
                     await DocumentSettings.DeleteFile(SD.Image, SD.UserProfile, account.ProfileImage);
-                    return await Responses.FailurResponse(addToRolesResult.Errors, HttpStatusCode.InternalServerError);
+                    return await Responses.FailurResponse("Can't create account without roles", HttpStatusCode.InternalServerError);
+                }
+
+                try
+                {
+                    await _userManager.AddToRolesAsync(account, roles);
+                }
+                catch (Exception ex)
+                {
+                    await DocumentSettings.DeleteFile(SD.Image, SD.UserProfile, account.ProfileImage);
+                    return await Responses.FailurResponse(ex.Message, HttpStatusCode.InternalServerError);
                 }
 
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(account);
@@ -215,7 +224,7 @@ namespace Airbnb.Application.Services
 
             await _mailService.SendEmailAsync(user.Email, "Reset password!", otp);
 
-            return await Responses.SuccessResponse(Token:await _userManager.GeneratePasswordResetTokenAsync(user),message:"Check your mail!");
+            return await Responses.SuccessResponse(Token: await _userManager.GeneratePasswordResetTokenAsync(user), message: "Check your mail!");
         }
         public async Task<Responses> ResetPassword(ResetPasswordDTO resetPassword)
         {
@@ -226,7 +235,7 @@ namespace Airbnb.Application.Services
                 return await Responses.FailurResponse("Email is not found!");
             }
 
-            if(!_memoryCache.TryGetValue(user.Email, out string Otp))
+            if (!_memoryCache.TryGetValue(user.Email, out string Otp))
             {
                 return await Responses.FailurResponse("Time expired.... try again!", HttpStatusCode.BadRequest);
             }
@@ -247,7 +256,7 @@ namespace Airbnb.Application.Services
         public async Task<Responses> RemoveUser(AppUser user)
         {
             //await _userManager.DeleteAsync(user);
-            var spec = new BaseSpecifications<Property,string>(x=>x.OwnerId==user.Id);
+            var spec = new BaseSpecifications<Property, string>(x => x.OwnerId == user.Id);
             var proprties = await _unitOfWork.Repository<Property, string>().GetAllWithSpecAsync(spec);
             //if (user.ProfileImage != null)
             //{
@@ -255,7 +264,7 @@ namespace Airbnb.Application.Services
             //    string imageName = list[list.Length - 1];
             //    await DocumentSettings.DeleteFile(SD.Image, SD.UserProfile, imageName);
             //}
-            return await Responses.SuccessResponse(proprties,"User Has Been Deleted Successfully.");
+            return await Responses.SuccessResponse(proprties, "User Has Been Deleted Successfully.");
         }
     }
 }

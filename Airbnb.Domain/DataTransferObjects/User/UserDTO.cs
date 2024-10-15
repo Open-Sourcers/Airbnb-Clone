@@ -25,10 +25,5 @@ namespace Airbnb.Domain.DataTransferObjects.User
         public string PlaceType { get; set; } = string.Empty;
 
     }
-    public class ReviewDto
-    {
-        public string Comment { get; set; } = string.Empty;
-        public int Stars { get; set; }
-
-    }
+    
 }

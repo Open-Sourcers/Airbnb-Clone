@@ -1,15 +1,11 @@
 ﻿using Airbnb.Domain;
+using Airbnb.Domain.Entities;
 using Airbnb.Domain.Interfaces.Interface;
 using Airbnb.Domain.Interfaces.Repositories;
 using Airbnb.Infrastructure.Data;
 using Airbnb.Infrastructure.Specifications;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Airbnb.Infrastructure.Repositories
 {
@@ -23,7 +19,7 @@ namespace Airbnb.Infrastructure.Repositories
             _context = context;
             _dbSet = _context.Set<TEntity>();
         }
-
+        // 
         public async Task AddAsync(TEntity entity)
            => await _dbSet.AddAsync(entity);
 
@@ -32,11 +28,8 @@ namespace Airbnb.Infrastructure.Repositories
 
         public void Remove(TEntity entity)
            => _dbSet.Remove(entity);
-
-
         public async Task<IEnumerable<TEntity>>? GetAllAsync()
           => await _dbSet.ToListAsync();
-
 
         public async Task<TEntity>? GetByIdAsync(TKey id)
           => (await _dbSet.FindAsync(id))!;

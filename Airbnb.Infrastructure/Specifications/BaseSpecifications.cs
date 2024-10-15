@@ -12,20 +12,21 @@ namespace Airbnb.Infrastructure.Specifications
     public class BaseSpecifications<TEntity, TKey> : ISpecifications<TEntity, TKey> where TEntity : BaseEntity<TKey>
     {
         public Expression<Func<TEntity, bool>> Criteria { get; set; }
-        public List<Expression<Func<TEntity, object>>> Includes { get; set; }
         public Expression<Func<TEntity, object>> OrderBy { get; set; }
         public Expression<Func<TEntity, object>> OrderByDescending { get; set; }
         public int Take { get; set; }
         public int Skip { get; set; }
         public bool IsPaginationEnabled { get; set; }
 
+        // Get All
         public BaseSpecifications()
         {
-            
         }
+
+        // Get By criteria
         public BaseSpecifications(Expression<Func<TEntity, bool>> CriteriaExpression)
         {
-            Criteria = CriteriaExpression;   
+            Criteria = CriteriaExpression;
         }
 
         public void AddOrderBy(Expression<Func<TEntity, object>> OrderByExpression)

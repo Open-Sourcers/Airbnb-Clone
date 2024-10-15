@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Airbnb.Domain;
+﻿using Airbnb.Domain;
 using Airbnb.Domain.Interfaces.Interface;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
+
 
 namespace Airbnb.Infrastructure.Specifications
 {
@@ -35,7 +29,6 @@ namespace Airbnb.Infrastructure.Specifications
                 Query = Query.Skip(Spec.Skip).Take(Spec.Take);
             }
 
-            Query = Spec.Includes.Aggregate(Query, (CurrentQuery, IncludeExpression) => CurrentQuery.Include(IncludeExpression));
             return Query;
         }
     }

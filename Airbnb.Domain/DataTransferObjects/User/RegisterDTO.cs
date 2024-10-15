@@ -12,7 +12,8 @@ namespace Airbnb.Domain.DataTransferObjects.User
     public enum Role
     {
         Customer,
-        Owner
+        Owner,
+        Other
     }
 
     public class RegisterDTO
